@@ -16,7 +16,7 @@ Cần đổi type, store hay component dùng chung thì nhắn lead, không tự
 ## Store (`@/lib/store`)
 
 State: `{ cart, couponCode, orders, appointments, consultRequests }`, lưu ở localStorage key `mocy-demo`.
-Tab khác ghi dữ liệu thì tab này tự cập nhật (sự kiện `storage`), không cần reload.
+Tab khác ghi dữ liệu thì tab này tự cập nhật (sự kiện `storage`), không cần reload. Mọi action ghi đều đọc lại localStorage ngay trước khi kiểm tra và ghi, nên tab đang giữ state cũ cũng không ghi đè dữ liệu tab khác vừa lưu.
 Lần đầu mở trang, `seedOrders` và `seedAppointments` được gộp vào store theo id.
 
 ### Hook (chỉ dùng trong client component)
@@ -39,7 +39,7 @@ Lần đầu mở trang, `seedOrders` và `seedAppointments` được gộp vào
 - Tư vấn: `createConsultRequest(input)` → `ConsultRequest` (mã `TV...`), `updateConsultRequestStatus`, `removeConsultRequest`.
 - Demo: `resetDemoData()` xóa hết và nạp lại seed, mọi tab cùng cập nhật.
 
-Action có thể ném `StoreError` (thông điệp tiếng Việt, hiện thẳng cho người dùng): thiếu Họ tên/SĐT, giỏ trống, trùng giờ hẹn, localStorage đầy.
+Action có thể ném `StoreError`: `message` tiếng Việt hiện thẳng cho người dùng, `code` để rẽ nhánh xử lý (không so chuỗi message): `MISSING_CUSTOMER` (thiếu Họ tên/SĐT), `EMPTY_CART`, `SLOT_TAKEN` (khung giờ vừa có người đặt), `STORAGE_FULL` (localStorage đầy).
 
 ```tsx
 try {
@@ -59,7 +59,7 @@ try {
 - `@/lib/schedule`: `getUpcomingWorkingDates(doctor, days)`, `getAvailableSlots(doctor, date, appointments)` (bỏ giờ đã đặt và giờ đã qua).
 - `@/lib/pricing`: `calcCartTotals`, `findCoupon`. Phí ship 30.000đ, miễn phí từ 500.000đ.
 - `@/lib/image`: `compressImage(file)` → data URL JPEG nhỏ, dùng trước khi lưu ảnh đơn thuốc cũ.
-- `@/lib/utils`: `cn(...)`, `normalizeText` (bỏ dấu để tìm kiếm), `isValidPhone`.
+- `@/lib/utils`: `cn(...)` (gộp class bằng tailwind-merge, class truyền sau thắng class mặc định), `normalizeText` (bỏ dấu để tìm kiếm), `isValidPhone`.
 
 ## UI kit (`@/components/ui`)
 

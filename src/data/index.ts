@@ -1,26 +1,13 @@
 /**
- * Dữ liệu mẫu tĩnh. mock-data-writer sẽ điền nội dung.
- * Giữ nguyên tên export và type; store và các trang import trực tiếp từ đây.
- * Ngày của seedOrders / seedAppointments nên tính tương đối từ hôm nay bằng
- * `isoFromNow` / `dateKeyFromNow` trong `@/lib/date`, để biểu đồ Admin luôn có số liệu mới.
- * Id của bản ghi seed phải cố định (VD "seed-order-01") để store gộp đúng.
+ * Dữ liệu mẫu tĩnh. Giữ nguyên tên export và type; store và các trang import trực tiếp từ đây.
+ * Ngày của seedOrders / seedAppointments tính tương đối từ hôm nay bằng
+ * `isoFromNow` / `dateKeyFromNow` trong `@/lib/date`.
+ * Id của bản ghi seed cố định (VD "seed-order-01") để store gộp đúng.
  */
-import type {
-  Appointment,
-  Article,
-  Coupon,
-  Doctor,
-  Order,
-  Product,
-  SymptomGroup,
-  Testimonial,
-} from "@/types";
-
-export const products: Product[] = [];
-export const doctors: Doctor[] = [];
-export const articles: Article[] = [];
-export const symptomGroups: SymptomGroup[] = [];
-export const testimonials: Testimonial[] = [];
-export const coupons: Coupon[] = [];
-export const seedOrders: Order[] = [];
-export const seedAppointments: Appointment[] = [];
+export { products } from "./products";
+export { doctors } from "./doctors";
+export { symptomGroups } from "./symptom-groups";
+export { articles } from "./articles";
+export { testimonials } from "./testimonials";
+export { coupons } from "./coupons";
+export { seedOrders, seedAppointments } from "./seed";

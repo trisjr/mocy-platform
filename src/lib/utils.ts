@@ -1,6 +1,16 @@
-/** Ghép className, bỏ giá trị rỗng. Không tự gộp class Tailwind trùng nhau. */
+import { extendTailwindMerge } from "tailwind-merge";
+
+// Báo cho tailwind-merge biết các token tự định nghĩa trong globals.css.
+const twMerge = extendTailwindMerge({
+  extend: { theme: { radius: ["card"], shadow: ["card"], font: ["heading"] } },
+});
+
+/**
+ * Ghép className, bỏ giá trị rỗng và gộp class Tailwind xung đột: class đứng sau thắng.
+ * VD cn("inline-flex", "hidden lg:inline-flex") -> "hidden lg:inline-flex".
+ */
 export function cn(...classes: Array<string | false | null | undefined>): string {
-  return classes.filter(Boolean).join(" ");
+  return twMerge(classes.filter(Boolean).join(" "));
 }
 
 function randomChars(length: number): string {

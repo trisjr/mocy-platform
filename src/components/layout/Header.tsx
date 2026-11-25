@@ -38,12 +38,12 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur">
       <div className="hidden bg-herb-800 text-sm text-herb-50 md:block">
         <Container className="flex h-9 items-center justify-between gap-6">
-          <span className="flex items-center gap-2">
-            <MapPin aria-hidden="true" className="size-4" />
-            {SITE.address}
+          <span className="flex min-w-0 items-center gap-2">
+            <MapPin aria-hidden="true" className="size-4 shrink-0" />
+            <span className="truncate">{SITE.address}</span>
           </span>
-          <span className="flex items-center gap-5">
-            <span className="flex items-center gap-2">
+          <span className="flex shrink-0 items-center gap-5 whitespace-nowrap">
+            <span className="hidden items-center gap-2 lg:flex">
               <Clock aria-hidden="true" className="size-4" />
               {SITE.openingHours}
             </span>
@@ -54,8 +54,8 @@ export function Header() {
           </span>
         </Container>
       </div>
-      <Container className="flex h-16 items-center justify-between gap-4 md:h-20">
-        <Logo />
+      <Container className="flex h-16 items-center justify-between gap-3 md:h-20">
+        <Logo className="shrink-0" />
         <nav aria-label="Điều hướng chính" className="hidden md:block">
           <ul className="flex items-center gap-1">
             {NAV_ITEMS.map((item) => {
@@ -66,7 +66,7 @@ export function Header() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex min-h-12 items-center rounded-lg px-4 text-lg font-semibold transition-colors",
+                      "flex min-h-12 items-center rounded-lg px-3 text-base font-semibold whitespace-nowrap transition-colors xl:px-4 xl:text-lg",
                       active ? "bg-herb-50 text-herb-800" : "text-wood-800 hover:bg-paper-200",
                     )}
                   >
@@ -77,7 +77,7 @@ export function Header() {
             })}
           </ul>
         </nav>
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex shrink-0 items-center gap-1 md:gap-2">
           <a
             href={SITE.hotlineHref}
             aria-label={`Gọi hotline ${SITE.hotline}`}

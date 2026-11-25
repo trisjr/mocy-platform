@@ -36,11 +36,17 @@ interface PersistedState extends StoreState {
   seededIds: string[];
 }
 
-/** Lỗi nghiệp vụ có thông điệp tiếng Việt, hiển thị thẳng cho người dùng. */
+/** Mã lỗi nghiệp vụ, dùng để rẽ nhánh xử lý thay vì so chuỗi message. */
+export type StoreErrorCode = "MISSING_CUSTOMER" | "EMPTY_CART" | "SLOT_TAKEN" | "STORAGE_FULL";
+
+/** Lỗi nghiệp vụ: `code` để xử lý theo loại lỗi, `message` tiếng Việt hiển thị thẳng cho người dùng. */
 export class StoreError extends Error {
-  constructor(message: string) {
+  readonly code: StoreErrorCode;
+
+  constructor(code: StoreErrorCode, message: string) {
     super(message);
     this.name = "StoreError";
+    this.code = code;
   }
 }
 
@@ -59,16 +65,25 @@ export const EMPTY_STATE: StoreState = {
 let state: StoreState = EMPTY_STATE;
 let seededIds: string[] = [];
 let loaded = false;
+/** Chuỗi localStorage mà state trong bộ nhớ đang phản ánh; khác chuỗi hiện tại nghĩa là tab khác vừa ghi. */
+let lastRaw: string | null = null;
 const listeners = new Set<() => void>();
 
 function emit() {
   listeners.forEach((listener) => listener());
 }
 
-function readStorage(): PersistedState | null {
+function readRaw(): string | null {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
+    return window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function parsePersisted(raw: string | null): PersistedState | null {
+  if (!raw) return null;
+  try {
     const parsed = JSON.parse(raw) as PersistedState;
     return parsed?.version === VERSION ? parsed : null;
   } catch {
@@ -78,10 +93,13 @@ function readStorage(): PersistedState | null {
 
 function writeStorage(next: StoreState, nextSeededIds: string[]) {
   const persisted: PersistedState = { ...next, version: VERSION, seededIds: nextSeededIds };
+  const raw = JSON.stringify(persisted);
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+    window.localStorage.setItem(STORAGE_KEY, raw);
+    lastRaw = raw;
   } catch {
     throw new StoreError(
+      "STORAGE_FULL",
       "Không lưu được dữ liệu vì bộ nhớ trình duyệt đã đầy. Vui lòng bỏ bớt ảnh hoặc bấm “Reset dữ liệu demo”.",
     );
   }
@@ -89,7 +107,9 @@ function writeStorage(next: StoreState, nextSeededIds: string[]) {
 
 /** Đọc localStorage và gộp bản ghi seed chưa từng có. Ghi lại nếu có seed mới. */
 function loadFromStorage() {
-  const persisted = readStorage();
+  const raw = readRaw();
+  lastRaw = raw;
+  const persisted = parsePersisted(raw);
   const base: StoreState = persisted
     ? {
         cart: persisted.cart ?? [],
@@ -128,9 +148,25 @@ function ensureLoaded() {
   window.addEventListener("storage", (event) => {
     // key = null khi tab khác gọi localStorage.clear().
     if (event.key !== null && event.key !== STORAGE_KEY) return;
-    loadFromStorage();
-    emit();
+    if (syncFromStorage()) emit();
   });
+}
+
+/** Nạp lại từ localStorage nếu tab khác đã ghi kể từ lần đọc/ghi cuối. Trả về true nếu state đổi. */
+function syncFromStorage(): boolean {
+  if (readRaw() === lastRaw) return false;
+  loadFromStorage();
+  return true;
+}
+
+/**
+ * State mới nhất để action đọc rồi ghi: luôn đọc lại localStorage trước, không tin bản trong bộ nhớ
+ * (sự kiện storage có thể đến muộn), để không ghi đè dữ liệu tab khác vừa lưu.
+ */
+function fresh(): StoreState {
+  ensureLoaded();
+  if (syncFromStorage()) emit();
+  return state;
 }
 
 /** State hiện tại (tham chiếu ổn định cho tới lần thay đổi kế tiếp). */
@@ -166,7 +202,7 @@ function nowIso() {
 function requireCustomer(customer: { name: string; phone: string }) {
   const name = customer.name.trim();
   const phone = customer.phone.trim();
-  if (!name || !phone) throw new StoreError("Vui lòng nhập Họ tên và Số điện thoại.");
+  if (!name || !phone) throw new StoreError("MISSING_CUSTOMER", "Vui lòng nhập Họ tên và Số điện thoại.");
   return { name, phone };
 }
 
@@ -174,7 +210,7 @@ function requireCustomer(customer: { name: string; phone: string }) {
 
 /** Thêm vào giỏ; nếu đã có cùng sản phẩm + định lượng thì cộng dồn số lượng. */
 export function addToCart(item: Omit<CartItem, "quantity">, quantity = 1) {
-  const s = getState();
+  const s = fresh();
   const existing = s.cart.find((i) => i.productId === item.productId && i.variantId === item.variantId);
   const cart = existing
     ? s.cart.map((i) =>
@@ -186,7 +222,7 @@ export function addToCart(item: Omit<CartItem, "quantity">, quantity = 1) {
 
 /** Đặt số lượng; quantity <= 0 thì xóa dòng. */
 export function setCartItemQuantity(productId: string, variantId: string, quantity: number) {
-  const s = getState();
+  const s = fresh();
   if (quantity <= 0) return removeFromCart(productId, variantId);
   const cart = s.cart.map((i) =>
     i.productId === productId && i.variantId === variantId
@@ -197,19 +233,19 @@ export function setCartItemQuantity(productId: string, variantId: string, quanti
 }
 
 export function removeFromCart(productId: string, variantId: string) {
-  const s = getState();
+  const s = fresh();
   commit({ ...s, cart: s.cart.filter((i) => !(i.productId === productId && i.variantId === variantId)) });
 }
 
 export function clearCart() {
-  commit({ ...getState(), cart: [], couponCode: null });
+  commit({ ...fresh(), cart: [], couponCode: null });
 }
 
 export type ApplyCouponResult = { ok: true; coupon: Coupon } | { ok: false; error: string };
 
 /** Áp mã ưu đãi (mã nằm trong `coupons` của `@/data`). Không ném lỗi, trả về kết quả. */
 export function applyCoupon(code: string): ApplyCouponResult {
-  const s = getState();
+  const s = fresh();
   const coupon = findCoupon(code);
   if (!coupon) return { ok: false, error: "Mã ưu đãi không đúng hoặc đã hết hạn." };
   const error = getCouponError(coupon, calcCartTotals(s.cart).subtotal);
@@ -219,7 +255,7 @@ export function applyCoupon(code: string): ApplyCouponResult {
 }
 
 export function removeCoupon() {
-  commit({ ...getState(), couponCode: null });
+  commit({ ...fresh(), couponCode: null });
 }
 
 // ---------- Đơn hàng ----------
@@ -231,8 +267,8 @@ export interface PlaceOrderInput {
 
 /** Tạo đơn từ giỏ hàng hiện tại (kèm mã ưu đãi), sau đó làm trống giỏ. Trả về đơn vừa tạo. */
 export function placeOrder(input: PlaceOrderInput): Order {
-  const s = getState();
-  if (s.cart.length === 0) throw new StoreError("Giỏ hàng đang trống.");
+  const s = fresh();
+  if (s.cart.length === 0) throw new StoreError("EMPTY_CART", "Giỏ hàng đang trống.");
   const customer = requireCustomer(input.shipping);
   const coupon = s.couponCode ? findCoupon(s.couponCode) : undefined;
   const totals = calcCartTotals(s.cart, coupon);
@@ -264,7 +300,7 @@ export function placeOrder(input: PlaceOrderInput): Order {
 }
 
 export function updateOrderStatus(id: string, status: OrderStatus) {
-  const s = getState();
+  const s = fresh();
   const now = nowIso();
   commit({
     ...s,
@@ -278,7 +314,7 @@ export function updateOrderStatus(id: string, status: OrderStatus) {
 
 /** Chuyển đơn sang trạng thái kế tiếp trong ORDER_STATUS_FLOW. Trả về trạng thái mới, hoặc undefined nếu đã hoàn thành. */
 export function advanceOrderStatus(id: string): OrderStatus | undefined {
-  const order = getState().orders.find((o) => o.id === id);
+  const order = fresh().orders.find((o) => o.id === id);
   if (!order) return undefined;
   const next = ORDER_STATUS_FLOW[ORDER_STATUS_FLOW.indexOf(order.status) + 1];
   if (next) updateOrderStatus(id, next);
@@ -286,7 +322,7 @@ export function advanceOrderStatus(id: string): OrderStatus | undefined {
 }
 
 export function removeOrder(id: string) {
-  const s = getState();
+  const s = fresh();
   commit({ ...s, orders: s.orders.filter((o) => o.id !== id) });
 }
 
@@ -299,10 +335,10 @@ export type NewAppointmentInput = Pick<
 
 /** Tạo lịch hẹn trạng thái "pending". Ném StoreError nếu khung giờ đã có người đặt. */
 export function createAppointment(input: NewAppointmentInput): Appointment {
-  const s = getState();
+  const s = fresh();
   const customer = requireCustomer(input.customer);
   if (getBookedSlots(input.doctorId, input.date, s.appointments).includes(input.time)) {
-    throw new StoreError("Khung giờ này vừa có người đặt. Vui lòng chọn giờ khác.");
+    throw new StoreError("SLOT_TAKEN", "Khung giờ này vừa có người đặt. Vui lòng chọn giờ khác.");
   }
   const now = nowIso();
   const appointment: Appointment = {
@@ -321,7 +357,7 @@ export function createAppointment(input: NewAppointmentInput): Appointment {
 }
 
 export function updateAppointmentStatus(id: string, status: AppointmentStatus) {
-  const s = getState();
+  const s = fresh();
   const now = nowIso();
   commit({
     ...s,
@@ -330,7 +366,7 @@ export function updateAppointmentStatus(id: string, status: AppointmentStatus) {
 }
 
 export function removeAppointment(id: string) {
-  const s = getState();
+  const s = fresh();
   commit({ ...s, appointments: s.appointments.filter((a) => a.id !== id) });
 }
 
@@ -343,7 +379,7 @@ export type NewConsultRequestInput = Pick<
 
 /** Tạo yêu cầu tư vấn trạng thái "new". Ảnh phải nén trước bằng `compressImage` (`@/lib/image`). */
 export function createConsultRequest(input: NewConsultRequestInput): ConsultRequest {
-  const s = getState();
+  const s = fresh();
   const customer = requireCustomer(input.customer);
   const now = nowIso();
   const request: ConsultRequest = {
@@ -361,7 +397,7 @@ export function createConsultRequest(input: NewConsultRequestInput): ConsultRequ
 }
 
 export function updateConsultRequestStatus(id: string, status: ConsultRequestStatus) {
-  const s = getState();
+  const s = fresh();
   const now = nowIso();
   commit({
     ...s,
@@ -370,7 +406,7 @@ export function updateConsultRequestStatus(id: string, status: ConsultRequestSta
 }
 
 export function removeConsultRequest(id: string) {
-  const s = getState();
+  const s = fresh();
   commit({ ...s, consultRequests: s.consultRequests.filter((r) => r.id !== id) });
 }
 

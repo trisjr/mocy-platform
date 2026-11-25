@@ -1,0 +1,55 @@
+import type { Doctor } from "@/types";
+
+export const doctors: Doctor[] = [
+  {
+    id: "doc-nguyen-van-an",
+    slug: "luong-y-nguyen-van-an",
+    name: "Lương y Nguyễn Văn An",
+    title: "Lương y",
+    avatar: "/images/doctors/nguyen-van-an.svg",
+    specialties: ["Xương khớp", "Bồi bổ cơ thể"],
+    symptomGroupIds: ["sg-xuong-khop", "sg-boi-bo"],
+    experienceYears: 28,
+    licenseNumber: "004512/HNO-CCHN (mẫu)",
+    bio: "Lương y Nguyễn Văn An theo nghề từ gia truyền, hơn 28 năm chẩn trị tại phòng khám Đông y ở Hà Nội. Thế mạnh của ông là bắt mạch, xem thể trạng để gia giảm bài thuốc cho người cao tuổi hay mỏi gối, cứng khớp và người cần bồi bổ sau ốm. Ông là người chịu trách nhiệm chuyên môn của phòng khám.",
+    consultModes: ["online", "clinic"],
+    schedule: {
+      weekdays: [1, 3, 5, 6],
+      slots: ["08:00", "08:30", "09:00", "09:30", "10:00", "14:00", "14:30", "15:00", "15:30", "16:00"],
+    },
+  },
+  {
+    id: "doc-tran-thi-mai",
+    slug: "bac-si-tran-thi-mai",
+    name: "Bác sĩ YHCT Trần Thị Mai",
+    title: "Bác sĩ YHCT",
+    avatar: "/images/doctors/tran-thi-mai.svg",
+    specialties: ["Mất ngủ", "Dưỡng nhan", "Sức khỏe phụ nữ"],
+    symptomGroupIds: ["sg-mat-ngu", "sg-duong-nhan", "sg-boi-bo"],
+    experienceYears: 15,
+    licenseNumber: "007821/HNO-CCHN (mẫu)",
+    bio: "Bác sĩ Trần Thị Mai tốt nghiệp chuyên ngành Y học cổ truyền, 15 năm kinh nghiệm tư vấn cho người mất ngủ, hay lo âu căng thẳng và phụ nữ muốn chăm sóc sức khỏe từ bên trong. Bác sĩ chú trọng lắng nghe nếp sinh hoạt, giờ giấc ăn ngủ trước khi đề xuất bài thuốc hoặc trà thảo mộc.",
+    consultModes: ["online", "clinic"],
+    schedule: {
+      weekdays: [2, 4, 6, 0],
+      slots: ["09:00", "09:30", "10:00", "10:30", "11:00", "15:00", "15:30", "16:00", "16:30"],
+    },
+  },
+  {
+    id: "doc-le-quang-hoa",
+    slug: "luong-y-le-quang-hoa",
+    name: "Lương y Lê Quang Hòa",
+    title: "Lương y",
+    avatar: "/images/doctors/le-quang-hoa.svg",
+    specialties: ["Tiêu hóa", "Bồi bổ cơ thể"],
+    symptomGroupIds: ["sg-tieu-hoa", "sg-boi-bo", "sg-mat-ngu"],
+    experienceYears: 22,
+    licenseNumber: "003967/HNO-CCHN (mẫu)",
+    bio: "Lương y Lê Quang Hòa có 22 năm chẩn trị, chuyên tư vấn cho người ăn uống kém, đầy bụng, khó tiêu và người làm việc văn phòng hay mệt mỏi. Ông nhận tư vấn trực tuyến vào buổi chiều tối để thuận tiện cho người đi làm.",
+    consultModes: ["online"],
+    schedule: {
+      weekdays: [1, 2, 4, 5, 0],
+      slots: ["17:30", "18:00", "18:30", "19:00", "19:30"],
+    },
+  },
+];
