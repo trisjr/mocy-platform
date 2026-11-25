@@ -130,6 +130,9 @@ export function OrderSuccess() {
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <ButtonLink href={`/tra-cuu?ma=${order.code}`} variant="outline" size="lg">
+          Theo dõi đơn hàng
+        </ButtonLink>
         <ButtonLink href="/san-pham" variant="outline" size="lg">
           Tiếp tục mua sắm
         </ButtonLink>

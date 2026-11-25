@@ -131,6 +131,9 @@ export function BookingConfirmation() {
           <ButtonLink href="/" size="lg">
             Về trang chủ
           </ButtonLink>
+          <ButtonLink href={`/tra-cuu?ma=${appointment.code}`} variant="outline" size="lg">
+            Theo dõi lịch hẹn
+          </ButtonLink>
           <ButtonLink href="/kien-thuc" variant="outline" size="lg">
             Đọc kiến thức Đông y
           </ButtonLink>

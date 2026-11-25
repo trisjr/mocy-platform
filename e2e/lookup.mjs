@@ -95,6 +95,21 @@ export async function run(browser) {
     rec("Reset dữ liệu khi đang xem: chuyển sang Không tìm thấy, không reload",
       /DH0000E2E/.test(before) && gone && (await T.evaluate(() => window.__noReload === 1)), { before: before.slice(0, 80) });
 
+    // ---- Lối vào /tra-cuu
+    await T.goto(B + "/dat-lich/xac-nhan?ma=LH2611S15", { waitUntil: "networkidle0" });
+    await sleep(400);
+    const entry = await T.evaluate(() => ({
+      footer: !!document.querySelector('footer a[href="/tra-cuu"]'),
+      appt: !!document.querySelector('a[href="/tra-cuu?ma=LH2611S15"]'),
+    }));
+    rec("Footer và phiếu lịch hẹn có link /tra-cuu", entry.footer && entry.appt, entry);
+    await T.goto(B + "/thanh-toan/thanh-cong?ma=DH2611S01", { waitUntil: "networkidle0" });
+    await sleep(400);
+    await clickText(T, 'a[href="/tra-cuu?ma=DH2611S01"]', /Theo dõi đơn hàng/);
+    const fromOrder = await T.waitForFunction(() => location.pathname.startsWith("/tra-cuu") && /Hoàn thành/.test(document.querySelector("#ket-qua")?.innerText || ""), { timeout: 4000 })
+      .then(() => true).catch(() => false);
+    rec("Phiếu đơn hàng → Theo dõi đơn hàng → /tra-cuu thấy Hoàn thành", fromOrder);
+
     rec("Không lỗi console hay request >= 400", errs.length === 0, errs.slice(0, 5));
   } finally {
     await ctx.close();
