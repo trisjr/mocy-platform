@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowRight, Leaf, ShoppingCart, Tag, Trash2, X } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Button, ButtonLink, Card, Input } from "@/components/ui";
+import { Button, ButtonLink, Input } from "@/components/ui";
 import { coupons } from "@/data";
 import { getProductById } from "@/lib/catalog";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
@@ -17,8 +17,10 @@ import {
   useCart,
   useHydrated,
 } from "@/lib/store";
+import { EmptyCart } from "./EmptyCart";
 import { OrderSummary } from "./OrderSummary";
 import { QuantityInput } from "./QuantityInput";
+import { SupplementNotice } from "./SupplementNotice";
 import { SafeImage } from "@/components/ui";
 
 export function CartView() {
@@ -42,51 +44,43 @@ export function CartView() {
   }
 
   if (items.length === 0) {
-    return (
-      <Card padding="lg" className="mt-6 flex flex-col items-center gap-4 text-center">
-        <ShoppingCart aria-hidden="true" className="size-14 text-herb-400" />
-        <p className="text-xl font-semibold">Giỏ hàng đang trống</p>
-        <p className="text-ink-muted">Anh/chị chọn dược liệu, trà thảo mộc hoặc combo liệu trình để thêm vào giỏ.</p>
-        <ButtonLink href="/san-pham" size="lg" icon={<Leaf aria-hidden="true" className="size-5" />}>
-          Mua dược liệu
-        </ButtonLink>
-      </Card>
-    );
+    return <EmptyCart message="Anh/chị chọn dược liệu, trà thảo mộc hoặc combo liệu trình để thêm vào giỏ." />;
   }
 
   const remainingForFreeShip = FREE_SHIPPING_THRESHOLD - totals.subtotal;
+  const cartProducts = items.map((i) => getProductById(i.productId)).filter((p) => p !== undefined);
 
   return (
     <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_24rem] lg:items-start">
       <div className="flex flex-col gap-4">
-        <ul className="flex flex-col gap-4">
+        {/* Các dòng hàng in trên một tờ phiếu, ngăn bằng nét đứt */}
+        <ul className="paper-fiber divide-y divide-dashed divide-line-strong/60 border-y-2 border-double border-line-strong/70 bg-surface/80 px-4">
           {items.map((item) => {
             const slug = getProductById(item.productId)?.slug;
             return (
               <li key={item.productId + item.variantId}>
-                <Card className="flex gap-4">
-                  <div className="size-24 shrink-0 overflow-hidden rounded-xl bg-paper-200 sm:size-28">
-                    <SafeImage src={item.image} alt={item.productName} className="size-full" />
+                <div className="flex gap-4 py-4">
+                  <div className="label-frame relative size-24 shrink-0 overflow-hidden bg-surface sm:size-28">
+                    <SafeImage src={item.image} alt="" className="absolute inset-0 size-full" />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col gap-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         {slug ? (
-                          <Link href={`/san-pham/${slug}`} className="text-lg font-semibold hover:underline">
+                          <Link href={`/san-pham/${slug}`} className="font-heading text-xl font-bold hover:underline">
                             {item.productName}
                           </Link>
                         ) : (
-                          <p className="text-lg font-semibold">{item.productName}</p>
+                          <p className="font-heading text-xl font-bold">{item.productName}</p>
                         )}
-                        <p className="text-ink-muted">
-                          {item.variantLabel} · {formatPrice(item.unitPrice)}
-                        </p>
+                        <p className="text-ink-muted">{item.variantLabel}</p>
+                        <p className="text-label text-ink-muted tabular-nums">{formatPrice(item.unitPrice)}</p>
                       </div>
                       <button
                         type="button"
                         onClick={() => run(() => removeFromCart(item.productId, item.variantId))}
                         aria-label={`Xóa ${item.productName} (${item.variantLabel}) khỏi giỏ`}
-                        className="-mt-1 -mr-1 flex size-12 shrink-0 items-center justify-center rounded-full text-danger hover:bg-danger-soft"
+                        className="-mt-1 -mr-1 flex size-12 shrink-0 items-center justify-center rounded-md text-danger hover:bg-danger-soft"
                       >
                         <Trash2 aria-hidden="true" className="size-6" />
                       </button>
@@ -97,34 +91,35 @@ export function CartView() {
                         onChange={(n) => run(() => setCartItemQuantity(item.productId, item.variantId, n))}
                         label={`${item.productName} (${item.variantLabel})`}
                       />
-                      <p className="text-lg font-bold text-bronze-700">{formatPrice(item.unitPrice * item.quantity)}</p>
+                      <p className="text-lg font-bold tabular-nums">{formatPrice(item.unitPrice * item.quantity)}</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               </li>
             );
           })}
         </ul>
+        <SupplementNotice products={cartProducts} />
         {actionError && (
-          <p role="alert" className="rounded-xl bg-danger-soft p-4 text-danger">
+          <p role="alert" className="border-l-4 border-danger bg-danger-soft px-4 py-3 text-danger">
             {actionError}
           </p>
         )}
-        <Link href="/san-pham" className="min-h-12 content-center font-semibold text-herb-700 underline">
-          ← Tiếp tục chọn sản phẩm
+        <Link
+          href="/san-pham"
+          className="min-h-12 self-start content-center font-semibold text-herb-700 underline decoration-2 underline-offset-4"
+        >
+          Tiếp tục chọn sản phẩm
         </Link>
       </div>
 
-      <Card padding="lg" className="flex flex-col gap-5">
-        <h2 className="text-2xl">Tóm tắt đơn hàng</h2>
+      <div className="label-frame paper-fiber flex flex-col gap-5 bg-surface px-5 py-6 shadow-card sm:px-7">
+        <h2 className="text-2xl md:text-3xl">Tóm tắt đơn hàng</h2>
 
         {coupon ? (
-          <div className="flex items-start justify-between gap-3 rounded-xl border border-herb-200 bg-herb-50 p-4">
+          <div className="flex items-start justify-between gap-3 border-l-4 border-herb-700 bg-herb-50 py-3 pr-2 pl-4">
             <div>
-              <p className="flex items-center gap-2 font-semibold text-herb-800">
-                <Tag aria-hidden="true" className="size-5" />
-                Đã áp mã {coupon.code}
-              </p>
+              <p className="font-semibold text-herb-800">Đã áp mã {coupon.code}</p>
               <p className="text-ink-muted">{coupon.description}</p>
               {totals.couponError && (
                 <p role="alert" className="mt-1 font-medium text-danger">
@@ -136,7 +131,7 @@ export function CartView() {
               type="button"
               onClick={() => run(removeCoupon)}
               aria-label={`Bỏ mã ${coupon.code}`}
-              className="-mt-2 -mr-2 flex size-12 shrink-0 items-center justify-center rounded-full text-ink-muted hover:bg-paper-200"
+              className="-mt-2 flex size-12 shrink-0 items-center justify-center rounded-md text-ink-muted hover:bg-paper-200"
             >
               <X aria-hidden="true" className="size-5" />
             </button>
@@ -195,7 +190,7 @@ export function CartView() {
                     key={c.code}
                     type="button"
                     title={c.description}
-                    className="min-h-12 rounded-full border-2 border-dashed border-herb-400 px-4 font-semibold text-herb-700 hover:bg-herb-50"
+                    className="min-h-12 rounded-[3px] border-2 border-dashed border-herb-700 bg-paper-50 px-4 font-semibold tracking-wide text-herb-800 hover:bg-herb-50"
                     onClick={() => {
                       setCode(c.code);
                       setCouponError(null);
@@ -212,15 +207,15 @@ export function CartView() {
         <OrderSummary totals={totals} couponCode={totals.discount > 0 ? coupon?.code : null} />
 
         {remainingForFreeShip > 0 && (
-          <p className="rounded-xl bg-info-soft p-3 text-info">
+          <p className="border-l-4 border-info bg-info-soft px-4 py-3 text-info">
             Mua thêm {formatPrice(remainingForFreeShip)} để được miễn phí giao hàng.
           </p>
         )}
 
-        <ButtonLink href="/thanh-toan" size="lg" fullWidth icon={<ArrowRight aria-hidden="true" className="size-5" />}>
+        <ButtonLink href="/thanh-toan" size="lg" fullWidth>
           Tiến hành đặt hàng
         </ButtonLink>
-      </Card>
+      </div>
     </div>
   );
 }

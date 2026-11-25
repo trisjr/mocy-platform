@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Giỏ hàng" };
 export default function CartPage() {
   return (
     <Container className="py-8 md:py-12">
-      <h1 className="text-3xl md:text-4xl">Giỏ hàng</h1>
+      <h1 className="text-4xl md:text-5xl">Giỏ hàng</h1>
       <CartView />
     </Container>
   );

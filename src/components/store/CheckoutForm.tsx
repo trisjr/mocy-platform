@@ -1,23 +1,21 @@
 "use client";
 
-import { Banknote, Leaf, QrCode } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { Button, ButtonLink, Card, ChoiceCard, Input, Textarea } from "@/components/ui";
+import { Button, ButtonLink, ChoiceCard, Input, Textarea } from "@/components/ui";
+import { getProductById } from "@/lib/catalog";
 import { PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { formatPrice } from "@/lib/format";
 import { placeOrder, StoreError, useCart, useHydrated } from "@/lib/store";
 import { isValidPhone } from "@/lib/utils";
 import type { PaymentMethod } from "@/types";
+import { EmptyCart } from "./EmptyCart";
 import { OrderSummary } from "./OrderSummary";
+import { SupplementNotice } from "./SupplementNotice";
 
-const PAYMENT_OPTIONS: { value: PaymentMethod; description: string; icon: typeof Banknote }[] = [
-  { value: "cod", description: "Trả tiền mặt cho nhân viên giao hàng.", icon: Banknote },
-  {
-    value: "bank-transfer",
-    description: "Mã QR và nội dung chuyển khoản hiện ngay sau khi đặt đơn.",
-    icon: QrCode,
-  },
+const PAYMENT_OPTIONS: { value: PaymentMethod; description: string }[] = [
+  { value: "cod", description: "Trả tiền mặt cho nhân viên giao hàng." },
+  { value: "bank-transfer", description: "Mã QR và nội dung chuyển khoản hiện ngay sau khi đặt đơn." },
 ];
 
 interface Errors {
@@ -48,15 +46,7 @@ export function CheckoutForm() {
   }
 
   if (items.length === 0) {
-    return (
-      <Card padding="lg" className="mt-6 flex flex-col items-center gap-4 text-center">
-        <p className="text-xl font-semibold">Giỏ hàng đang trống</p>
-        <p className="text-ink-muted">Anh/chị thêm sản phẩm vào giỏ trước khi đặt hàng.</p>
-        <ButtonLink href="/san-pham" size="lg" icon={<Leaf aria-hidden="true" className="size-5" />}>
-          Mua dược liệu
-        </ButtonLink>
-      </Card>
-    );
+    return <EmptyCart message="Anh/chị thêm sản phẩm vào giỏ trước khi đặt hàng." />;
   }
 
   function submit(e: FormEvent<HTMLFormElement>) {
@@ -81,9 +71,10 @@ export function CheckoutForm() {
 
   return (
     <form noValidate onSubmit={submit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_24rem] lg:items-start">
-      <div className="flex flex-col gap-6">
-        <Card padding="lg" className="flex flex-col gap-4">
-          <h2 className="text-2xl">Thông tin nhận hàng</h2>
+      {/* Phiếu đặt hàng: hai phần ngăn bằng nét đứt */}
+      <div className="paper-fiber border border-line bg-surface shadow-card">
+        <section className="flex flex-col gap-4 px-5 py-6 sm:px-7">
+          <h2 className="text-2xl md:text-3xl">Thông tin nhận hàng</h2>
           <p className="text-ink-muted">Chỉ cần Họ tên và Số điện thoại, nhà thuốc sẽ gọi xác nhận trước khi giao.</p>
           <Input
             id="ho-ten"
@@ -120,10 +111,10 @@ export function CheckoutForm() {
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
-        </Card>
+        </section>
 
-        <Card padding="lg" className="flex flex-col gap-4">
-          <h2 id="thanh-toan-label" className="text-2xl">
+        <section className="flex flex-col gap-4 border-t-2 border-dashed border-line-strong/60 px-5 py-6 sm:px-7">
+          <h2 id="thanh-toan-label" className="text-2xl md:text-3xl">
             Phương thức thanh toán
           </h2>
           <div role="radiogroup" aria-labelledby="thanh-toan-label" className="flex flex-col gap-3">
@@ -134,16 +125,15 @@ export function CheckoutForm() {
                 onSelect={() => setPayment(o.value)}
                 title={PAYMENT_METHOD_LABELS[o.value]}
                 description={o.description}
-                media={<o.icon aria-hidden="true" className="size-7 text-herb-700" />}
               />
             ))}
           </div>
-        </Card>
+        </section>
       </div>
 
-      <Card padding="lg" className="flex flex-col gap-5">
-        <h2 className="text-2xl">Đơn hàng ({totals.itemCount} sản phẩm)</h2>
-        <ul className="flex flex-col gap-3 border-b border-line pb-4">
+      <div className="label-frame paper-fiber flex flex-col gap-5 bg-surface px-5 py-6 shadow-card sm:px-7">
+        <h2 className="text-2xl md:text-3xl">Đơn hàng ({totals.itemCount} sản phẩm)</h2>
+        <ul className="flex flex-col gap-3 border-b border-dashed border-line-strong/60 pb-4">
           {items.map((item) => (
             <li key={item.productId + item.variantId} className="flex justify-between gap-3">
               <span>
@@ -152,13 +142,14 @@ export function CheckoutForm() {
                   {item.variantLabel} × {item.quantity}
                 </span>
               </span>
-              <span className="shrink-0 font-semibold">{formatPrice(item.unitPrice * item.quantity)}</span>
+              <span className="shrink-0 font-semibold tabular-nums">{formatPrice(item.unitPrice * item.quantity)}</span>
             </li>
           ))}
         </ul>
         <OrderSummary totals={totals} couponCode={totals.discount > 0 ? coupon?.code : null} />
+        <SupplementNotice products={items.map((i) => getProductById(i.productId)).filter((p) => p !== undefined)} />
         {errors.form && (
-          <p role="alert" className="rounded-xl bg-danger-soft p-4 text-danger">
+          <p role="alert" className="border-l-4 border-danger bg-danger-soft px-4 py-3 text-danger">
             {errors.form}
           </p>
         )}
@@ -168,7 +159,7 @@ export function CheckoutForm() {
         <ButtonLink href="/gio-hang" variant="ghost" fullWidth>
           Quay lại giỏ hàng
         </ButtonLink>
-      </Card>
+      </div>
     </form>
   );
 }
