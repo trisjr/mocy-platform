@@ -29,7 +29,7 @@ function NavLinks({ variant }: { variant: "sidebar" | "tabs" }) {
   return (
     <nav aria-label="Menu quản trị" className={variant === "sidebar" ? "flex flex-col gap-1" : "grid grid-cols-3 gap-1"}>
       {NAV.map(({ href, label, Icon }) => {
-        const active = href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+        const active = href === "/admin" ? pathname === "/admin" || pathname === "/admin/" : pathname.startsWith(href);
         const count = counts[href];
         return (
           <Link
