@@ -8,6 +8,7 @@ export * from "./Modal";
 export * from "./PriceTag";
 export * from "./SafeImage";
 export * from "./Seal";
+export * from "./Slip";
 export * from "./Select";
 export * from "./Stepper";
 export * from "./Textarea";

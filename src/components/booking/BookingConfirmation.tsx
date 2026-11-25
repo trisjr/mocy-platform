@@ -1,9 +1,8 @@
 "use client";
 
-import { CalendarCheck, CheckCircle2, ClipboardList, Phone } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Container } from "@/components/layout";
-import { Badge, ButtonLink, Card } from "@/components/ui";
+import { Badge, ButtonLink, Slip } from "@/components/ui";
 import { getDoctorById, getSymptomGroupById } from "@/lib/catalog";
 import { APPOINTMENT_STATUS_META, CONSULT_MODE_LABELS, ONLINE_CHANNEL_LABELS, SITE } from "@/lib/constants";
 import { formatDateKey, formatPhone } from "@/lib/format";
@@ -43,13 +42,13 @@ export function BookingConfirmation() {
   if (!appointment) {
     return (
       <Container className="py-16">
-        <Card padding="lg" className="mx-auto max-w-xl text-center">
-          <h1 className="text-2xl">Không tìm thấy lịch hẹn</h1>
+        <div className="label-frame paper-fiber mx-auto max-w-xl bg-surface px-6 py-10 text-center shadow-card">
+          <h1 className="text-3xl md:text-4xl">Không tìm thấy lịch hẹn</h1>
           <p className="mt-2 text-ink-muted">
             Mã lịch hẹn không đúng hoặc dữ liệu đã được xóa. Bạn có thể đặt lịch mới hoặc gọi {SITE.hotline} để được hỗ trợ.
           </p>
           <ButtonLink href="/dat-lich" size="lg" className="mt-5">Đặt lịch mới</ButtonLink>
-        </Card>
+        </div>
       </Container>
     );
   }
@@ -61,66 +60,81 @@ export function BookingConfirmation() {
   const prep = [...COMMON_PREP, ...(isOnline ? ONLINE_PREP : CLINIC_PREP)];
 
   return (
-    <Container className="py-6 sm:py-10">
-      <div className="mx-auto max-w-3xl">
-        <div className="rounded-card bg-herb-50 p-6 text-center sm:p-8">
-          <CheckCircle2 aria-hidden="true" className="mx-auto size-14 text-herb-700" />
-          <h1 className="mt-3 text-3xl">Đặt lịch thành công</h1>
-          <p className="mt-2 text-lg text-ink-muted">Mã lịch hẹn của bạn</p>
-          <p className="mt-1 font-mono text-4xl font-bold tracking-wider text-herb-800">{appointment.code}</p>
-          <p className="mt-3">
-            <Badge tone={status.tone}>{status.label}</Badge>
-          </p>
-          <p className="mt-3 text-ink-muted">
-            Lương y sẽ gọi xác nhận qua số {formatPhone(appointment.customer.phone)}. Hãy lưu lại mã lịch hẹn này.
-          </p>
-        </div>
+    <Container className="py-8 sm:py-12">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8">
+        {/* Phiếu hẹn: cuống có mã, giờ hẹn và dấu son; thân phiếu là thông tin lịch hẹn */}
+        <Slip
+          title="Đặt lịch thành công"
+          lead="Mã lịch hẹn của bạn"
+          code={appointment.code}
+          meta={
+            <>
+              <p className="font-heading text-2xl font-bold">
+                {appointment.time}, {formatDateKey(appointment.date)}
+              </p>
+              <Badge tone={status.tone}>{status.label}</Badge>
+              <p className="text-ink-muted">
+                Lương y sẽ gọi xác nhận qua số {formatPhone(appointment.customer.phone)}. Hãy lưu lại mã lịch hẹn này.
+              </p>
+            </>
+          }
+        >
+          <section aria-labelledby="thong-tin-hen" className="px-5 py-7 sm:px-10">
+            <h2 id="thong-tin-hen" className="text-2xl md:text-3xl">
+              Thông tin lịch hẹn
+            </h2>
+            <SummaryList
+              rows={[
+                { label: "Khách hàng", value: appointment.customer.name },
+                { label: "Số điện thoại", value: formatPhone(appointment.customer.phone) },
+                { label: "Lương y", value: doctor ? doctor.name : "Đang cập nhật" },
+                { label: "Thời gian", value: `${appointment.time}, ${formatDateKey(appointment.date)}` },
+                {
+                  label: "Hình thức",
+                  value: isOnline
+                    ? `${CONSULT_MODE_LABELS.online} (${appointment.onlineChannel ? ONLINE_CHANNEL_LABELS[appointment.onlineChannel] : "Zalo"})`
+                    : `${CONSULT_MODE_LABELS.clinic}, ${SITE.address}`,
+                },
+                ...(group ? [{ label: "Nhóm triệu chứng", value: group.name }] : []),
+                ...(appointment.symptoms ? [{ label: "Triệu chứng bạn mô tả", value: appointment.symptoms }] : []),
+              ]}
+            />
+          </section>
+        </Slip>
 
-        <Card padding="lg" className="mt-6">
-          <h2 className="text-2xl">Thông tin lịch hẹn</h2>
-          <SummaryList
-            rows={[
-              { label: "Khách hàng", value: appointment.customer.name },
-              { label: "Số điện thoại", value: formatPhone(appointment.customer.phone) },
-              { label: "Lương y", value: doctor ? doctor.name : "Đang cập nhật" },
-              { label: "Thời gian", value: `${appointment.time}, ${formatDateKey(appointment.date)}` },
-              {
-                label: "Hình thức",
-                value: isOnline
-                  ? `${CONSULT_MODE_LABELS.online} (${appointment.onlineChannel ? ONLINE_CHANNEL_LABELS[appointment.onlineChannel] : "Zalo"})`
-                  : `${CONSULT_MODE_LABELS.clinic}, ${SITE.address}`,
-              },
-              ...(group ? [{ label: "Nhóm triệu chứng", value: group.name }] : []),
-              ...(appointment.symptoms ? [{ label: "Triệu chứng bạn mô tả", value: appointment.symptoms }] : []),
-            ]}
-          />
-        </Card>
-
-        <Card padding="lg" className="mt-6">
-          <h2 className="flex items-center gap-2 text-2xl">
-            <ClipboardList aria-hidden="true" className="size-6 text-herb-700" />
+        {/* Lời dặn trước khi khám, in như tờ dặn dò kèm phiếu */}
+        <section
+          aria-labelledby="chuan-bi"
+          className="paper-fiber border-y-2 border-double border-line-strong/70 bg-surface/80 px-5 py-6 sm:px-8"
+        >
+          <h2 id="chuan-bi" className="text-2xl md:text-3xl">
             Chuẩn bị trước khi khám
           </h2>
-          <ul className="mt-3 list-disc space-y-2 pl-6 text-lg marker:text-herb-600">
+          <ul className="mt-4 flex flex-col gap-3 text-lg">
             {prep.map((p) => (
-              <li key={p}>{p}</li>
+              <li key={p} className="flex gap-3">
+                <span aria-hidden="true" className="mt-2.5 size-2 shrink-0 rotate-45 bg-bronze-500" />
+                <span>{p}</span>
+              </li>
             ))}
           </ul>
-          <p className="mt-4 flex items-center gap-2 text-ink-muted">
-            <Phone aria-hidden="true" className="size-5" />
-            Cần đổi giờ hoặc hủy lịch, vui lòng gọi {SITE.hotline}.
+          <p className="mt-5 border-t border-dashed border-line-strong/60 pt-4 text-ink-muted">
+            Cần đổi giờ hoặc hủy lịch, vui lòng gọi{" "}
+            <a href={SITE.hotlineHref} className="inline-flex min-h-12 items-center font-semibold text-herb-700 underline">
+              {SITE.hotline}
+            </a>
+            .
           </p>
-        </Card>
+        </section>
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/" size="lg">Về trang chủ</ButtonLink>
-          <ButtonLink href="/kien-thuc" variant="outline" size="lg">Đọc kiến thức Đông y</ButtonLink>
-          <ButtonLink
-            href="/dat-lich"
-            variant="ghost"
-            size="lg"
-            icon={<CalendarCheck aria-hidden="true" className="size-5" />}
-          >
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <ButtonLink href="/" size="lg">
+            Về trang chủ
+          </ButtonLink>
+          <ButtonLink href="/kien-thuc" variant="outline" size="lg">
+            Đọc kiến thức Đông y
+          </ButtonLink>
+          <ButtonLink href="/dat-lich" variant="ghost" size="lg">
             Đặt thêm lịch khác
           </ButtonLink>
         </div>

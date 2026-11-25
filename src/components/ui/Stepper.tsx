@@ -31,7 +31,7 @@ export function Stepper({ steps, current, onStepClick, className }: StepperProps
           const circle = (
             <span
               className={cn(
-                "flex size-10 shrink-0 items-center justify-center rounded-[3px] border-2 font-bold",
+                "relative z-10 flex size-10 shrink-0 items-center justify-center rounded-[3px] border-2 font-bold",
                 done && "border-herb-700 bg-herb-700 text-paper-50",
                 active && "border-herb-700 bg-surface text-herb-800",
                 !done && !active && "border-line-strong bg-surface text-ink-muted",

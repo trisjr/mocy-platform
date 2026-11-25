@@ -3,7 +3,7 @@
 import { Copy } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Badge, Button, ButtonLink, Seal } from "@/components/ui";
+import { Badge, Button, ButtonLink, Slip } from "@/components/ui";
 import { BANK_INFO, ORDER_STATUS_META, PAYMENT_METHOD_LABELS, SITE } from "@/lib/constants";
 import { formatDateTime, formatPhone, formatPrice } from "@/lib/format";
 import { useHydrated, useOrder } from "@/lib/store";
@@ -41,20 +41,17 @@ export function OrderSuccess() {
   return (
     <div className="flex flex-col gap-8">
       {/* Phiếu đặt hàng: cuống phiếu có mã đơn và dấu son, thân phiếu là hướng dẫn thanh toán */}
-      <article className="paper-fiber relative bg-surface shadow-card">
-        <Seal className="absolute -top-5 right-3 size-16 rotate-[8deg] sm:-top-6 sm:right-8 sm:size-24" />
-        <header className="flex flex-col items-center gap-3 px-5 pt-16 pb-8 text-center sm:px-24 sm:pt-10">
-          <h1 className="text-4xl md:text-5xl">Đặt hàng thành công</h1>
-          <p className="text-lg">Cảm ơn {order.shipping.name}! Mã đơn hàng của anh/chị là</p>
-          <p className="border-y-[3px] border-double border-line-strong px-6 py-2 text-3xl font-bold tracking-[0.12em] tabular-nums md:text-4xl">
-            {order.code}
-          </p>
+      <Slip
+        title="Đặt hàng thành công"
+        lead={<>Cảm ơn {order.shipping.name}! Mã đơn hàng của anh/chị là</>}
+        code={order.code}
+        meta={
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
             <Badge tone={status.tone}>{status.label}</Badge>
             <span className="text-ink-muted">Đặt lúc {formatDateTime(order.createdAt)}</span>
           </div>
-        </header>
-        <div aria-hidden="true" className="ticket-tear" />
+        }
+      >
         {isTransfer ? (
           <section aria-labelledby="vietqr-title" className="flex flex-col gap-5 px-5 py-7 sm:px-10">
             <h2 id="vietqr-title" className="text-2xl md:text-3xl">
@@ -86,7 +83,7 @@ export function OrderSuccess() {
             <strong className="tabular-nums">{formatPrice(order.total)}</strong> khi nhận hàng.
           </p>
         )}
-      </article>
+      </Slip>
 
       <section
         aria-labelledby="chi-tiet-don"
