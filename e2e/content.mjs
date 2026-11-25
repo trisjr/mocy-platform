@@ -183,7 +183,8 @@ export async function run(browser) {
           window.scrollTo(0, document.body.scrollHeight);
           await new Promise((r) => setTimeout(r, 150));
           const r = b.getBoundingClientRect();
-          const atBottom = r.bottom < 0 || r.top > innerHeight ? true : hit();
+          // null: ở cuối trang nút đã cuộn khỏi màn hình, không có gì để che.
+          const atBottom = r.bottom < 0 || r.top > innerHeight ? null : hit();
           return { found: true, atEnd, atBottom };
         },
         sel,
@@ -200,7 +201,7 @@ export async function run(browser) {
       await p.goto(B + "/thanh-toan", { waitUntil: "networkidle0" });
       await sleep(300);
       const c = await notCovered("button[type=submit]", /Đặt hàng/);
-      rec(w + "px: nút nổi không che Tiếp tục / Đặt hàng", a.found && a.atEnd && a.atBottom && c.found && c.atEnd && c.atBottom, { datLich: a, thanhToan: c });
+      rec(w + "px: nút nổi không che Tiếp tục / Đặt hàng", a.found && a.atEnd && a.atBottom !== false && c.found && c.atEnd && c.atBottom !== false, { datLich: a, thanhToan: c });
     }
     await p.setViewport({ width: 1280, height: 800 });
 
@@ -222,11 +223,15 @@ export async function run(browser) {
     const mapsOn = async (code) => {
       await p.goto(B + "/dat-lich/xac-nhan?ma=" + code, { waitUntil: "networkidle0" });
       await sleep(400);
-      return p.evaluate((M) => !!document.querySelector("main " + M), MAPS);
+      return p.evaluate((M, code) => ({ map: !!document.querySelector("main " + M), rendered: document.body.innerText.includes(code) }), MAPS, code);
     };
     const clinicMap = await mapsOn(modes.clinic);
     const onlineMap = await mapsOn(modes.online);
-    rec("Phiếu lịch hẹn tại phòng khám có Chỉ đường, trực tuyến thì không", clinicMap && !onlineMap, { ...modes, clinicMap, onlineMap });
+    rec(
+      "Phiếu lịch hẹn tại phòng khám có Chỉ đường, trực tuyến thì không",
+      clinicMap.rendered && clinicMap.map && onlineMap.rendered && !onlineMap.map,
+      { ...modes, clinicMap, onlineMap },
+    );
 
     rec("Không lỗi console hay request >= 400", errs.length === 0, errs.slice(0, 5));
 

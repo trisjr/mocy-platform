@@ -11,9 +11,17 @@ export const metadata: Metadata = {
 export default function LookupPage() {
   return (
     <Container className="py-8 sm:py-12">
-      <Suspense fallback={<p className="text-lg text-ink-muted">Đang tải…</p>}>
-        <LookupView />
-      </Suspense>
+      <div className="mx-auto flex max-w-3xl flex-col gap-8">
+        <header>
+          <h1 className="text-4xl sm:text-5xl">Tra cứu đơn hàng &amp; lịch hẹn</h1>
+          <p className="mt-3 text-lg text-ink-muted">
+            Nhập mã in trên phiếu xác nhận (đơn hàng, lịch hẹn, yêu cầu tư vấn) hoặc số điện thoại đã dùng khi đặt.
+          </p>
+        </header>
+        <Suspense fallback={<p className="text-lg text-ink-muted">Đang tải…</p>}>
+          <LookupView />
+        </Suspense>
+      </div>
     </Container>
   );
 }

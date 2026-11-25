@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { SummaryList } from "@/components/booking/SummaryList";
 import { Badge, Button, Input } from "@/components/ui";
 import { getDoctorById } from "@/lib/catalog";
@@ -23,7 +23,10 @@ import type { Appointment, ConsultRequest, Order } from "@/types";
 
 const LINK = "inline-flex min-h-12 items-center font-semibold text-herb-700 underline decoration-2 underline-offset-4";
 
-/** Trang tra cứu: mã lấy từ `?ma=`, số điện thoại chỉ giữ trong state (không ghi lên URL). */
+/**
+ * Form và kết quả tra cứu: mã lấy từ `?ma=`, số điện thoại chỉ giữ trong state (không ghi lên URL).
+ * Tiêu đề trang nằm ở page.tsx để có trong HTML tĩnh.
+ */
 export function LookupView() {
   const router = useRouter();
   const urlCode = useSearchParams().get("ma");
@@ -35,8 +38,16 @@ export function LookupView() {
   const [value, setValue] = useState(urlCode ?? "");
   const [error, setError] = useState("");
   const [phone, setPhone] = useState<string | null>(null);
+  // Ô nhập theo mã trên URL khi điều hướng (VD bấm một dòng trong danh sách theo SĐT, hoặc Back).
+  const [syncedCode, setSyncedCode] = useState(urlCode);
+  if (urlCode !== syncedCode) {
+    setSyncedCode(urlCode);
+    if (urlCode) setValue(urlCode);
+  }
 
-  const code = urlCode && codeKind(urlCode) ? urlCode.toUpperCase() : null;
+  const parsedUrl = urlCode ? parseLookupInput(urlCode) : null;
+  const code = parsedUrl && "code" in parsedUrl && codeKind(parsedUrl.code) ? parsedUrl.code : null;
+  const badUrlCode = urlCode && !code ? urlCode.trim() : null;
   const data: LookupMatches = useMemo(() => ({ orders, appointments, consults }), [orders, appointments, consults]);
   const byCode = useMemo(() => (code ? findMatches({ type: "code", code }, data) : null), [code, data]);
   const byPhone = useMemo(() => (phone ? findMatches({ type: "phone", phone }, data) : null), [phone, data]);
@@ -46,6 +57,8 @@ export function LookupView() {
     const q = parseLookupInput(value);
     if ("error" in q) {
       setError(q.error);
+      setPhone(null);
+      if (urlCode) router.replace("/tra-cuu", { scroll: false });
       return;
     }
     setError("");
@@ -58,15 +71,19 @@ export function LookupView() {
     }
   }
 
-  return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8">
-      <header>
-        <h1 className="text-4xl sm:text-5xl">Tra cứu đơn hàng &amp; lịch hẹn</h1>
-        <p className="mt-3 text-lg text-ink-muted">
-          Nhập mã in trên phiếu xác nhận (đơn hàng, lịch hẹn, yêu cầu tư vấn) hoặc số điện thoại đã dùng khi đặt.
-        </p>
-      </header>
+  let content: ReactNode = null;
+  if (!hydrated) {
+    if (urlCode || phone) content = <p className="text-lg text-ink-muted">Đang tải…</p>;
+  } else if (code && byCode) {
+    content = <CodeResult code={code} matches={byCode} />;
+  } else if (badUrlCode) {
+    content = <NotFound what={`mã ${badUrlCode}`} />;
+  } else if (phone && byPhone) {
+    content = <PhoneResult phone={phone} matches={byPhone} />;
+  }
 
+  return (
+    <>
       <form noValidate onSubmit={submit} className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <Input
           name="q"
@@ -83,18 +100,13 @@ export function LookupView() {
         </Button>
       </form>
 
-      {!hydrated ? (
-        (code || phone) && <p className="text-lg text-ink-muted">Đang tải…</p>
-      ) : code && byCode ? (
-        <CodeResult code={code} matches={byCode} />
-      ) : phone && byPhone ? (
-        <PhoneResult phone={phone} matches={byPhone} />
-      ) : null}
+      {/* Vùng live luôn có trong DOM để trình đọc màn hình đọc kết quả mới. */}
+      <div aria-live="polite">{content}</div>
 
       <p className="text-label text-ink-muted">
         Trạng thái tự cập nhật khi nhà thuốc xử lý, không cần tải lại trang.
       </p>
-    </div>
+    </>
   );
 }
 
@@ -102,7 +114,6 @@ function NotFound({ what }: { what: string }) {
   return (
     <section
       id="ket-qua"
-      aria-live="polite"
       className="label-frame paper-fiber bg-surface px-5 py-8 text-center shadow-card sm:px-10"
     >
       <h2 className="text-2xl md:text-3xl">Không tìm thấy</h2>
@@ -125,7 +136,6 @@ function CodeResult({ code, matches }: { code: string; matches: LookupMatches })
   return (
     <section
       id="ket-qua"
-      aria-live="polite"
       aria-labelledby="ket-qua-title"
       className="label-frame paper-fiber bg-surface px-5 py-7 shadow-card sm:px-10"
     >
@@ -252,7 +262,10 @@ function ConsultDetail({ consult }: { consult: ConsultRequest }) {
 interface Row {
   kind: string;
   code: string;
-  date: string;
+  /** Để sắp xếp: mới tạo nhất trước. */
+  createdAt: string;
+  /** Dòng ngày có nhãn, VD "Đặt ngày 24/11/2026" hoặc "Hẹn 09:00, Thứ 4, 25/11/2026". */
+  when: string;
   tone: Tone;
   label: string;
 }
@@ -262,26 +275,29 @@ function PhoneResult({ phone, matches }: { phone: string; matches: LookupMatches
     ...matches.orders.map((o) => ({
       kind: "Đơn hàng",
       code: o.code,
-      date: o.createdAt,
+      createdAt: o.createdAt,
+      when: `Đặt ngày ${formatDate(o.createdAt)}`,
       ...ORDER_STATUS_META[o.status],
     })),
     ...matches.appointments.map((a) => ({
       kind: "Lịch hẹn",
       code: a.code,
-      date: a.createdAt,
+      createdAt: a.createdAt,
+      when: `Hẹn ${a.time}, ${formatDateKey(a.date)}`,
       ...APPOINTMENT_STATUS_META[a.status],
     })),
     ...matches.consults.map((c) => ({
       kind: "Yêu cầu tư vấn",
       code: c.code,
-      date: c.createdAt,
+      createdAt: c.createdAt,
+      when: `Gửi ngày ${formatDate(c.createdAt)}`,
       ...CONSULT_STATUS_META[c.status],
     })),
-  ].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  ].sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0));
 
   if (rows.length === 0) return <NotFound what={`đơn hàng hay lịch hẹn nào của số ${maskPhone(phone)}`} />;
   return (
-    <section id="ket-qua" aria-live="polite" aria-labelledby="ket-qua-title">
+    <section id="ket-qua" aria-labelledby="ket-qua-title">
       <h2 id="ket-qua-title" className="text-2xl md:text-3xl">
         Kết quả cho số {maskPhone(phone)}
       </h2>
@@ -296,7 +312,7 @@ function PhoneResult({ phone, matches }: { phone: string; matches: LookupMatches
               <span>
                 <span className="font-semibold">{r.kind}</span>{" "}
                 <span className="tabular-nums text-herb-700 underline underline-offset-4">{r.code}</span>
-                <span className="block text-label text-ink-muted">{formatDate(r.date)}</span>
+                <span className="block text-label text-ink-muted">{r.when}</span>
               </span>
               <Badge tone={r.tone}>{r.label}</Badge>
             </Link>

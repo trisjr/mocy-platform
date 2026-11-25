@@ -56,6 +56,7 @@ export async function run(browser) {
         codes: [...document.querySelectorAll('#ket-qua a[href^="/tra-cuu?ma="]')].map((a) => a.innerText.match(/(DH|LH|TV)\w+/)?.[0]),
         text: document.querySelector("#ket-qua")?.innerText || "",
       }));
+      rec("SĐT " + phone + ": dòng lịch hẹn ghi rõ ngày hẹn", /Hẹn \d{2}:\d{2}, /.test(list.text) && /Đặt ngày /.test(list.text), list.text.slice(0, 200));
       rec("SĐT " + phone + ": 1 đơn + 1 lịch hẹn, không lộ tên, không ghi SĐT lên URL",
         list.codes.length === 2 && list.codes.includes("DH2611S21") && list.codes.includes("LH2611S15") && !list.text.includes("Tạ Quang Vinh") && !list.url.includes("0973"),
         list);
@@ -68,10 +69,15 @@ export async function run(browser) {
     });
     const modeLabel = appt.mode === "online" ? "Tư vấn trực tuyến" : "Khám tại phòng khám";
     rec("Bấm dòng lịch hẹn: Đã xác nhận + đúng hình thức", /Đã xác nhận/.test(appt.text) && appt.text.includes(modeLabel), appt);
+    rec("Ô nhập đổi theo mã vừa mở", (await T.$eval("input[name=q]", (e) => e.value)) === "LH2611S15");
 
     // ---- Lỗi định dạng và không tìm thấy
     await search(T, "abc");
-    rec("Nhập 'abc' báo lỗi định dạng", /DH, LH hoặc TV/.test(await T.evaluate(() => document.body.innerText)));
+    const bad = await T.evaluate(() => ({ err: /DH, LH hoặc TV/.test(document.body.innerText), result: !!document.querySelector("#ket-qua"), url: location.search }));
+    rec("Nhập 'abc' báo lỗi định dạng, ẩn kết quả cũ", bad.err && !bad.result && !bad.url.includes("ma="), bad);
+    await T.goto(B + "/tra-cuu?ma=abc", { waitUntil: "networkidle0" });
+    await sleep(300);
+    rec("URL ?ma=abc báo Không tìm thấy", /Không tìm thấy/.test(await result(T)));
     await search(T, "DH0101ZZZ");
     rec("Mã không có báo Không tìm thấy", /Không tìm thấy/.test(await result(T)));
 

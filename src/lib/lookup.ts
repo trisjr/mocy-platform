@@ -59,10 +59,12 @@ export function maskPhone(phone: string): string {
   return d.length < 7 ? "***" : `${d.slice(0, 4)} *** ${d.slice(-3)}`;
 }
 
-/** "Tạ Quang Vinh" -> "Tạ Q. Vinh"; tên 1–2 từ giữ nguyên. */
+/** Viết tắt tên để không lộ tên đầy đủ: "Tạ Quang Vinh" -> "Tạ Q. Vinh", "Phạm Lan" -> "P. Lan", "Lan" -> "L.". */
 export function shortName(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length <= 2) return parts.join(" ");
-  const middle = parts.slice(1, -1).map((p) => `${p[0]}.`);
-  return [parts[0], ...middle, parts[parts.length - 1]].join(" ");
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const initial = (p: string) => `${p[0]}.`;
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return initial(parts[0]);
+  if (parts.length === 2) return `${initial(parts[0])} ${parts[1]}`;
+  return [parts[0], ...parts.slice(1, -1).map(initial), parts[parts.length - 1]].join(" ");
 }

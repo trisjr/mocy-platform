@@ -87,7 +87,8 @@ export default function PolicyPage() {
         ))}
 
         <p className="mt-10 text-label text-ink-muted">
-          Nội dung chính sách là bản mẫu cho bản demo, sẽ cập nhật theo quy định thực tế của nhà thuốc.
+          Nội dung chính sách là bản mẫu cho bản demo, sẽ cập nhật theo quy định thực tế của nhà thuốc. Trang
+          quản trị trong bản demo mở công khai để trình diễn; bản chính thức có đăng nhập và phân quyền.
         </p>
         <DisclaimerBox variant="general" className="mt-4" />
       </div>
