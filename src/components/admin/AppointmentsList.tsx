@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge, Button } from "@/components/ui";
 import { APPOINTMENT_STATUS_META, CONSULT_MODE_LABELS, ONLINE_CHANNEL_LABELS } from "@/lib/constants";
@@ -72,7 +72,7 @@ export function AppointmentsList({ today }: { today: string }) {
     {
       key: "schedule",
       header: "Lịch khám",
-      className: "md:min-w-52",
+      className: "md:min-w-56",
       render: (a) => {
         const doctor = getDoctorById(a.doctorId);
         return (
@@ -81,7 +81,7 @@ export function AppointmentsList({ today }: { today: string }) {
               {a.time}, {formatDateKey(a.date)}
               {a.date === today && <Badge tone="info">Hôm nay</Badge>}
             </p>
-            <p>{doctor?.name ?? "Chưa rõ lương y"}</p>
+            <p className="whitespace-nowrap">{doctor?.name ?? "Chưa rõ lương y"}</p>
             <p className="text-sm text-ink-muted">
               {CONSULT_MODE_LABELS[a.mode]}
               {a.mode === "online" && a.onlineChannel ? ` · ${ONLINE_CHANNEL_LABELS[a.onlineChannel]}` : ""}
@@ -102,19 +102,15 @@ export function AppointmentsList({ today }: { today: string }) {
       ),
     },
     {
-      key: "status",
-      header: "Trạng thái",
-      className: "md:w-36",
-      render: (a) => <StatusTag tone={APPOINTMENT_STATUS_META[a.status].tone} label={APPOINTMENT_STATUS_META[a.status].label} />,
-    },
-    {
       key: "actions",
-      header: "Thao tác",
+      header: "Trạng thái / thao tác",
       hideLabel: true,
+      className: "md:w-48",
       render: (a) => {
         const open = expanded === a.id;
         return (
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col items-start gap-2 whitespace-nowrap md:items-stretch">
+            <StatusTag tone={APPOINTMENT_STATUS_META[a.status].tone} label={APPOINTMENT_STATUS_META[a.status].label} />
             {a.status === "pending" && (
               <Button
                 variant="primary"
@@ -128,12 +124,6 @@ export function AppointmentsList({ today }: { today: string }) {
               <Button variant="secondary" onClick={() => updateAppointmentStatus(a.id, "completed")} aria-label={`Đánh dấu ${a.code} đã khám`}>
                 Đã khám xong
               </Button>
-            )}
-            {(a.status === "completed" || a.status === "cancelled") && (
-              <span className="inline-flex min-h-12 items-center gap-1 font-semibold text-ink-muted">
-                {a.status === "completed" && <Check aria-hidden="true" className="size-5" />}
-                {a.status === "completed" ? "Đã xong" : "Đã hủy"}
-              </span>
             )}
             {(a.status === "pending" || a.status === "confirmed") && (
               <Button

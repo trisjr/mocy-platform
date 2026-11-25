@@ -38,7 +38,7 @@ export function DataList<T>({ caption, rows, getKey, columns, rowTone, expandedK
           <thead className="bg-paper-200 text-wood-800">
             <tr>
               {columns.map((c) => (
-                <th key={c.key} scope="col" className={cn("px-4 py-3 text-sm font-semibold", c.className)}>
+                <th key={c.key} scope="col" className={cn("px-3 py-3 text-sm font-semibold lg:px-4", c.className)}>
                   {c.header}
                 </th>
               ))}
@@ -56,7 +56,7 @@ export function DataList<T>({ caption, rows, getKey, columns, rowTone, expandedK
                       <td
                         key={c.key}
                         className={cn(
-                          "px-4 py-4",
+                          "px-3 py-4 lg:px-4",
                           i === 0 && "border-l-4",
                           i === 0 && (tone ? ROW_BAR[tone] : "border-transparent"),
                           c.className,
