@@ -1,14 +1,11 @@
-import { CalendarCheck, ChevronLeft, Clock, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArticleCard, ArticleContent, SuggestedProducts } from "@/components/blog";
-import { SafeImage } from "@/components/ui";
+import { ArticleCard, ArticleContent, ArticleMeta, SuggestedProducts } from "@/components/blog";
 import { Container } from "@/components/layout";
-import { ButtonLink, DisclaimerBox } from "@/components/ui";
+import { ButtonLink, DisclaimerBox, SafeImage, Seal } from "@/components/ui";
 import { articles } from "@/data";
 import { getArticleBySlug, getDoctorById, getProductById } from "@/lib/catalog";
-import { formatDate } from "@/lib/format";
 
 export function generateStaticParams() {
   return articles.map((a) => ({ slug: a.slug }));
@@ -38,37 +35,32 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   return (
     <Container className="py-6 sm:py-10">
       <article className="mx-auto max-w-3xl">
-        <Link href="/kien-thuc" className="inline-flex min-h-12 items-center gap-1 font-semibold text-herb-700">
-          <ChevronLeft aria-hidden="true" className="size-5" />
+        <Link
+          href="/kien-thuc"
+          className="inline-flex min-h-12 items-center font-semibold text-herb-700 underline decoration-2 underline-offset-4"
+        >
           Tất cả bài viết
         </Link>
 
-        <header className="mt-2">
-          <h1 className="text-3xl leading-tight sm:text-4xl">{article.title}</h1>
-          <p className="mt-4 text-lg text-ink-muted">{article.excerpt}</p>
-          <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-ink-muted">
-            <span>{article.author}</span>
-            <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
-            <span className="inline-flex items-center gap-1">
-              <Clock aria-hidden="true" className="size-4" />
-              {article.readingMinutes} phút đọc
-            </span>
+        <header className="mt-2 border-b-2 border-double border-line-strong/70 pb-6">
+          <h1 className="text-4xl leading-tight sm:text-5xl">{article.title}</h1>
+          <p className="mt-4 font-heading text-xl leading-relaxed text-ink-muted italic sm:text-2xl">{article.excerpt}</p>
+          <p className="mt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-x-3">
+            <span className="font-semibold">{article.author}</span>
+            <ArticleMeta article={article} className="text-base sm:border-l sm:border-line-strong sm:pl-3" />
           </p>
           {reviewer && (
-            <p className="mt-3 flex items-start gap-2 rounded-xl bg-herb-50 p-3 text-herb-900">
-              <ShieldCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-              <span>
-                Kiểm duyệt chuyên môn:{" "}
-                <Link href={bookingHref} className="font-semibold underline">
-                  {reviewer.name}
-                </Link>
-              </span>
+            <p className="mt-3 border-l-4 border-herb-700 bg-herb-50 px-4 py-2 text-herb-900">
+              Kiểm duyệt chuyên môn:{" "}
+              <Link href={bookingHref} className="inline-flex min-h-12 items-center font-semibold underline">
+                {reviewer.name}
+              </Link>
             </p>
           )}
         </header>
 
-        <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-card bg-paper-100">
-          <SafeImage src={article.coverImage} alt={article.title} className="absolute inset-0 size-full" loading="eager" />
+        <div className="label-frame relative mt-8 aspect-[16/9] w-full overflow-hidden bg-surface">
+          <SafeImage src={article.coverImage} alt="" className="absolute inset-0 size-full" loading="eager" />
         </div>
 
         <div className="mt-6">
@@ -82,29 +74,24 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {hasSupplement && <DisclaimerBox variant="supplement" className="mt-6" />}
         <DisclaimerBox variant="general" className="mt-4" />
 
-        <section className="mt-10 rounded-card bg-herb-800 p-6 text-white sm:p-8">
-          <h2 className="text-2xl text-white">Cần lương y tư vấn riêng cho bạn?</h2>
-          <p className="mt-2 text-lg text-herb-50">
+        <section className="label-frame paper-fiber relative mt-12 bg-surface px-5 pt-8 pb-6 shadow-card sm:px-8 sm:py-8">
+          <Seal className="absolute -top-6 right-5 size-16 rotate-6" />
+          <h2 className="text-3xl">Cần lương y tư vấn riêng cho bạn?</h2>
+          <p className="mt-2 text-lg">
             Mỗi người một thể trạng. Đặt lịch để được thăm khám và tư vấn phù hợp, qua Zalo, video hoặc tại phòng khám.
           </p>
-          <ButtonLink
-            href={bookingHref}
-            variant="accent"
-            size="lg"
-            icon={<CalendarCheck aria-hidden="true" className="size-5" />}
-            className="mt-5"
-          >
+          <ButtonLink href={bookingHref} size="lg" className="mt-5 w-full sm:w-auto">
             Đặt lịch tư vấn
           </ButtonLink>
         </section>
       </article>
 
       {others.length > 0 && (
-        <section className="mt-14">
-          <h2 className="text-2xl">Bài viết khác</h2>
-          <ul className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="mt-16 border-t-2 border-double border-line-strong/70 pt-8">
+          <h2 className="text-3xl">Bài viết khác</h2>
+          <ul className="mt-4 divide-y divide-line-strong/50 sm:mt-6 sm:grid sm:grid-cols-3 sm:gap-8 sm:divide-y-0">
             {others.map((a) => (
-              <li key={a.id}>
+              <li key={a.id} className="py-4 sm:py-0">
                 <ArticleCard article={a} />
               </li>
             ))}

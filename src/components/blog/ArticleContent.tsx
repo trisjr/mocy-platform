@@ -1,4 +1,3 @@
-import { CalendarCheck } from "lucide-react";
 import { ButtonLink } from "@/components/ui";
 import { getDoctorById } from "@/lib/catalog";
 import type { ArticleBlock } from "@/types";
@@ -9,8 +8,8 @@ function BookingCtaBlock({ text, doctorId }: { text?: string; doctorId?: string 
   const doctor = doctorId ? getDoctorById(doctorId) : undefined;
   const href = doctor ? `/dat-lich?doctor=${doctor.slug}` : "/dat-lich";
   return (
-    <aside className="my-8 rounded-card border border-bronze-300 bg-bronze-50 p-5 sm:p-6">
-      <p className="font-heading text-xl font-semibold text-wood-900">
+    <aside className="label-frame paper-fiber my-8 bg-surface px-5 py-6 sm:px-7">
+      <p className="font-heading text-2xl leading-snug font-bold text-ink">
         {text ?? "Bạn muốn được lương y tư vấn riêng theo thể trạng?"}
       </p>
       {doctor && (
@@ -18,7 +17,7 @@ function BookingCtaBlock({ text, doctorId }: { text?: string; doctorId?: string 
           Lương y gợi ý: {doctor.name}
         </p>
       )}
-      <ButtonLink href={href} size="lg" icon={<CalendarCheck aria-hidden="true" className="size-5" />} className="mt-4">
+      <ButtonLink href={href} size="lg" className="mt-4 w-full sm:w-auto">
         Đặt lịch tư vấn
       </ButtonLink>
     </aside>
@@ -33,7 +32,7 @@ export function ArticleContent({ blocks }: { blocks: ArticleBlock[] }) {
         switch (block.type) {
           case "heading":
             return (
-              <h2 key={i} className="mt-10 mb-3 text-2xl leading-snug text-herb-900">
+              <h2 key={i} className="mt-10 mb-3 text-3xl leading-snug">
                 {block.text}
               </h2>
             );
@@ -45,9 +44,12 @@ export function ArticleContent({ blocks }: { blocks: ArticleBlock[] }) {
             );
           case "list":
             return (
-              <ul key={i} className="mt-4 list-disc space-y-2 pl-6 marker:text-herb-600">
+              <ul key={i} className="mt-4 flex flex-col gap-2">
                 {block.items.map((item, j) => (
-                  <li key={j}>{item}</li>
+                  <li key={j} className="flex gap-3">
+                    <span aria-hidden="true" className="mt-3 size-2 shrink-0 rotate-45 bg-bronze-500" />
+                    <span>{item}</span>
+                  </li>
                 ))}
               </ul>
             );
@@ -55,7 +57,7 @@ export function ArticleContent({ blocks }: { blocks: ArticleBlock[] }) {
             return (
               <blockquote
                 key={i}
-                className="my-6 rounded-r-xl border-l-4 border-bronze-400 bg-bronze-50 px-5 py-4 font-heading text-xl italic text-wood-900"
+                className="my-8 border-l-4 border-bronze-500 py-1 pl-5 font-heading text-2xl leading-snug text-wood-800 italic"
               >
                 {block.text}
               </blockquote>
@@ -63,7 +65,7 @@ export function ArticleContent({ blocks }: { blocks: ArticleBlock[] }) {
           case "image":
             return (
               <figure key={i} className="my-6">
-                <span className="relative block aspect-[16/10] w-full overflow-hidden rounded-card bg-paper-100">
+                <span className="label-frame relative block aspect-[16/10] w-full overflow-hidden bg-surface">
                   <SafeImage src={block.src} alt={block.alt} className="absolute inset-0 size-full" />
                 </span>
                 {block.caption && (
