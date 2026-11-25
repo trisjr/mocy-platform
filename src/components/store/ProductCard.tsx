@@ -1,44 +1,61 @@
 import Link from "next/link";
-import { Badge, buttonClasses, LegalBadge, PriceTag } from "@/components/ui";
+import type { ReactNode } from "react";
+import { buttonClasses, LegalBadge, PriceTag, SafeImage } from "@/components/ui";
 import { getMinPrice } from "@/lib/catalog";
-import { SALE_TYPE_LABELS } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import type { Product } from "@/types";
-import { SafeImage } from "@/components/ui";
 
-/** Thẻ sản phẩm: cả thẻ là link sang trang chi tiết. */
+/**
+ * Một ô trên tờ nhãn sản phẩm: ảnh trong khung hai nét, nhãn pháp lý dạng con dấu, tên, giá.
+ * Cả ô là link sang trang chi tiết. Đặt trong <ProductSheet> để có đường cắt giữa các ô.
+ */
 export function ProductCard({ product }: { product: Product }) {
   const isConsult = product.saleType === "consult";
   const minPrice = getMinPrice(product);
   const single = product.variants.length === 1 ? product.variants[0] : undefined;
   return (
-    <Link
-      href={`/san-pham/${product.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-card border border-line bg-surface shadow-card transition-shadow hover:border-line-strong hover:shadow-lg"
-    >
-      <div className="relative aspect-[4/3] overflow-hidden bg-paper-200">
-        <SafeImage src={product.images[0]} alt={product.name} className="size-full" />
-        <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-          <LegalBadge label={product.legalLabel} short />
-        </div>
+    <Link href={`/san-pham/${product.slug}`} className="group flex h-full flex-col gap-2 p-3 sm:p-4">
+      <div className="label-frame relative aspect-square overflow-hidden bg-surface">
+        {/* Tên sản phẩm đã có trong link nên ảnh để alt rỗng, trình đọc màn hình không đọc lặp. */}
+        <SafeImage src={product.images[0]} alt="" className="absolute inset-0 size-full" />
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <div>
-          <Badge tone={isConsult ? "wood" : "herb"}>{SALE_TYPE_LABELS[product.saleType]}</Badge>
-        </div>
-        <h3 className="text-lg group-hover:text-herb-700">{product.name}</h3>
-        <p className="line-clamp-2 text-ink-muted">{product.shortDescription}</p>
-        <div className="mt-auto pt-1">
-          <PriceTag
-            price={minPrice}
-            compareAtPrice={single?.compareAtPrice}
-            prefix={product.variants.length > 1 ? "Từ" : undefined}
-            size="sm"
-          />
-        </div>
-        <span className={buttonClasses({ variant: isConsult ? "secondary" : "outline", fullWidth: true })}>
-          {isConsult ? "Xem & nhận tư vấn" : "Xem & chọn định lượng"}
-        </span>
+      <div className="mt-1">
+        <LegalBadge label={product.legalLabel} short />
       </div>
+      <h3 className="text-lg leading-snug group-hover:text-herb-700 group-hover:underline sm:text-xl">{product.name}</h3>
+      <p className="line-clamp-2 text-ink-muted max-sm:hidden">{product.shortDescription}</p>
+      <div className="mt-auto pt-1">
+        <PriceTag
+          price={minPrice}
+          compareAtPrice={single?.compareAtPrice}
+          prefix={product.variants.length > 1 ? "Từ" : undefined}
+          size="sm"
+        />
+      </div>
+      <span
+        className={cn(
+          buttonClasses({ variant: isConsult ? "secondary" : "outline", fullWidth: true }),
+          "px-3 text-center",
+        )}
+      >
+        {isConsult ? "Xem & nhận tư vấn" : "Xem & chọn định lượng"}
+      </span>
     </Link>
+  );
+}
+
+/**
+ * Tờ nhãn in: nền giấy, đường cắt nét đứt giữa các ô, dấu cắt ở góc.
+ * Ô cuối mỗi hàng/cột tự mất viền nhờ lề âm + overflow-hidden, nên dùng được với mọi số cột.
+ */
+export function ProductSheet({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <div className={cn("crop-marks paper-fiber bg-surface shadow-card", className)}>
+      <div className="overflow-hidden">
+        <ul className="-mr-px -mb-px grid grid-cols-2 lg:grid-cols-4 [&>li]:border-r [&>li]:border-b [&>li]:border-dashed [&>li]:border-line-strong/60">
+          {children}
+        </ul>
+      </div>
+    </div>
   );
 }
