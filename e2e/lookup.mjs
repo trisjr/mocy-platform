@@ -49,6 +49,7 @@ export async function run(browser) {
 
     // ---- Tra bằng SĐT có dấu chấm / khoảng trắng
     for (const phone of ["0973.219.821", "0973 219 821"]) {
+      await T.goto(B + "/tra-cuu", { waitUntil: "networkidle0" }); // trang mới, không còn kết quả lượt trước
       await search(T, phone);
       const list = await T.evaluate(() => ({
         url: location.search,

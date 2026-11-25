@@ -73,7 +73,8 @@ export function Footer() {
         </div>
       </Container>
       <div className="border-t border-wood-700">
-        <Container className="flex flex-col gap-3 py-6 text-label">
+        {/* lg:pb-40: chừa chỗ cho nút liên hệ nổi (cao ~148px) để không đè dòng cuối khi cuộn hết trang. */}
+        <Container className="flex flex-col gap-3 py-6 text-label lg:pb-40">
           <h2 className="font-sans text-base font-semibold text-paper-50">Thông tin pháp lý</h2>
           <ul className="flex flex-col gap-1.5">
             <li>{LEGAL_INFO.clinicLicense}</li>

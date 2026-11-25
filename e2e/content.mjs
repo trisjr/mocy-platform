@@ -121,9 +121,14 @@ export async function run(browser) {
     await sleep(800);
     const anchor = await p.evaluate(() => {
       const r = document.getElementById("doi-tra")?.getBoundingClientRect();
-      return r ? { top: Math.round(r.top), ih: innerHeight } : null;
+      const hb = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+      return r ? { top: Math.round(r.top), headerBottom: Math.round(hb), scrollY: Math.round(scrollY) } : null;
     });
-    rec("Link Đổi trả cuộn tới mục, không bị header che", !!anchor && anchor.top >= 64 && anchor.top < anchor.ih, anchor);
+    rec(
+      "Link Đổi trả cuộn tới mục, không bị header che",
+      !!anchor && anchor.scrollY > 0 && anchor.top >= anchor.headerBottom && anchor.top < anchor.headerBottom + 120,
+      anchor,
+    );
 
     // ---- Nút liên hệ nổi
     await p.goto(B + "/", { waitUntil: "networkidle0" });
@@ -137,6 +142,24 @@ export async function run(browser) {
       };
     });
     rec("1280px: có nút nổi Zalo + Gọi", fab.fixed && fab.visible, fab);
+    for (const w of [1024, 1152, 1280]) {
+      await p.setViewport({ width: w, height: 800 });
+      await sleep(200);
+      const clash = await p.evaluate(async () => {
+        window.scrollTo(0, document.body.scrollHeight);
+        await new Promise((r) => setTimeout(r, 150));
+        const f = document.querySelector('a[href^="https://zalo.me/"]').parentElement.getBoundingClientRect();
+        const hits = [...document.querySelectorAll("footer p, footer li, footer h2")].filter((e) => {
+          for (const r of e.getClientRects()) {
+            if (r.right > f.left && r.left < f.right && r.bottom > f.top && r.top < f.bottom) return true;
+          }
+          return false;
+        });
+        return hits.map((e) => e.innerText.slice(0, 40));
+      });
+      rec(w + "px: cuộn hết trang, nút nổi không đè chữ ở Footer", clash.length === 0, clash);
+    }
+    await p.setViewport({ width: 1280, height: 800 });
 
     // Nút nổi không che nút chính khi nút nằm sát đáy màn hình hoặc cuộn hết trang.
     const notCovered = (sel, re) =>
