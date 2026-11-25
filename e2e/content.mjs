@@ -1,5 +1,20 @@
 // Nội dung P1 của bản demo: quy trình 4 bước, câu hỏi thường gặp, khối chi phí, trang /gioi-thieu, điều hướng.
-import { B, makeRecorder, newContext, newPage, runStandalone, sleep } from "./lib.mjs";
+import { B, makeRecorder, newContext, newPage, nextStep, radio, runStandalone, sleep } from "./lib.mjs";
+
+// Kiểm khối chi phí trên trang đang mở.
+function feeInfo(p) {
+  return p.evaluate(() => {
+    const a = document.querySelector('aside[aria-labelledby="chi-phi-title"]');
+    if (!a) return null;
+    return {
+      text: a.innerText,
+      faqLink: !!a.querySelector('a[href="/#cau-hoi"]'),
+      controls: a.querySelectorAll("button,[role=radio]").length,
+    };
+  });
+}
+const feeOk = (f) =>
+  !!f && ["Tư vấn trực tuyến", "Miễn phí", "Sắc thuốc sẵn", "(mẫu)"].every((s) => f.text.includes(s)) && f.faqLink && f.controls === 0;
 
 export async function run(browser) {
   const { rec, results } = makeRecorder("content");
@@ -41,6 +56,17 @@ export async function run(browser) {
     await sleep(150);
     const second = await p.evaluate(() => document.querySelectorAll("#cau-hoi details")[1].open);
     rec("Nhấn Enter trên câu hỏi thứ hai thì mở", second);
+
+    // ---- Khối chi phí
+    for (const u of ["/dat-lich", "/tu-van", "/luong-y"]) {
+      await p.goto(B + u, { waitUntil: "networkidle0" });
+      const f = await feeInfo(p);
+      rec("Khối chi phí trên " + u, feeOk(f), f || "không có aside#chi-phi");
+    }
+    await p.goto(B + "/dat-lich", { waitUntil: "networkidle0" });
+    await radio(p, "Nhóm triệu chứng", 1);
+    await nextStep(p);
+    rec("Khối chi phí vẫn còn ở bước 2 của /dat-lich", feeOk(await feeInfo(p)));
 
     rec("Không lỗi console hay request >= 400", errs.length === 0, errs.slice(0, 5));
   } finally {

@@ -13,3 +13,4 @@ export { coupons } from "./coupons";
 export { seedOrders, seedAppointments } from "./seed";
 export { careSteps } from "./care-steps";
 export { faqs } from "./faqs";
+export { serviceFees, SERVICE_FEE_NOTE } from "./service-fees";

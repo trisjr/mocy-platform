@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FeeNotice } from "@/components/booking/FeeNotice";
 import { Container } from "@/components/layout";
 import { Badge, ButtonLink, DisclaimerBox, SafeImage, Seal } from "@/components/ui";
 import { articles, doctors, testimonials } from "@/data";
@@ -59,6 +60,8 @@ export default function DoctorsPage() {
           <DoctorProfile key={d.id} doctor={d} />
         ))}
       </div>
+
+      <FeeNotice className="mt-12 max-w-3xl" />
 
       <section className="label-frame paper-fiber relative mt-12 bg-surface px-5 pt-8 pb-6 shadow-card md:flex md:items-center md:justify-between md:gap-8 md:px-10 md:py-10">
         <Seal className="absolute -top-6 right-5 size-16 rotate-6" />

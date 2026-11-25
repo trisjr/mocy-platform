@@ -27,7 +27,7 @@ Ví dụ: `BASE_URL=http://localhost:3100 npm run e2e`.
 | Script | Kiểm tra gì |
 |---|---|
 | `shots.mjs` | Chụp các trang chính ở 390 và 1280: trang khách, `/luong-y`, `/kien-thuc`, bài viết, bước chọn lương y của `/dat-lich`, `/tu-van?san-pham=...`, Admin. Kiểm tràn ngang, thiếu h1, ảnh lỗi, ảnh méo hoặc không phủ khung (`absolute inset-0`), chữ Lorem hoặc tiếng Anh lạc, lỗi console và request >= 400 |
-| `content.mjs` | Nội dung P1: quy trình 4 bước và câu hỏi thường gặp (mở bằng chuột và Enter) trên Trang chủ |
+| `content.mjs` | Nội dung P1: quy trình 4 bước và câu hỏi thường gặp (mở bằng chuột và Enter) trên Trang chủ; khối chi phí trên `/dat-lich`, `/tu-van`, `/luong-y` |
 | `scenario.mjs` | Kịch bản demo 2 tab: khách lọc, chọn gói, áp mã, thanh toán chuyển khoản; Admin thấy đơn ngay không reload và đổi trạng thái; form cắt thang có ảnh; đặt lịch 5 bước; Admin thấy lịch hẹn và yêu cầu cắt thang kèm ảnh |
 | `collide.mjs` | Trùng giờ: tab đang ở bước 5 khi tab khác đặt đúng khung giờ đó. Tab này phải quay về bước chọn giờ, báo trùng, giữ thông tin, đặt lại được, không có lịch trùng |
 | `stale.mjs` | Tab cũ (chặn sự kiện `storage`) không ghi đè dữ liệu tab khác vừa lưu: đặt trùng giờ bị chặn, đặt giờ khác thì giữ cả hai, Admin tab cũ đổi trạng thái không làm mất lịch mới |
