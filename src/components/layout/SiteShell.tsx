@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { FloatingContact } from "./FloatingContact";
 import { Header } from "./Header";
 import { MobileNav } from "./MobileNav";
 
@@ -26,6 +27,7 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
       </main>
       {footer}
       <MobileNav />
+      <FloatingContact />
     </>
   );
 }

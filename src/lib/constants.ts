@@ -13,6 +13,8 @@ import type {
 /** Tông màu dùng cho Badge và nhãn trạng thái. */
 export type Tone = "herb" | "wood" | "bronze" | "neutral" | "danger" | "info";
 
+const ADDRESS = "Số 18 phố Lãn Ông, phường Hoàn Kiếm, Hà Nội";
+
 export const SITE = {
   name: "Đông y Mộc Y",
   shortName: "Mộc Y",
@@ -20,8 +22,11 @@ export const SITE = {
   hotline: "0901 234 567",
   hotlineHref: "tel:0901234567",
   zalo: "0901 234 567",
+  /** Số mẫu: trước buổi demo thay bằng số Zalo thật của phòng khám. */
+  zaloHref: "https://zalo.me/0901234567",
   email: "lienhe@mocy.vn",
-  address: "Số 18 phố Lãn Ông, phường Hoàn Kiếm, Hà Nội",
+  address: ADDRESS,
+  mapsHref: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`,
   openingHours: "7:30 – 20:00, Thứ 2 đến Chủ nhật",
 } as const;
 

@@ -39,6 +39,16 @@ export function Footer() {
             <li>{SITE.address}</li>
             <li>
               <a
+                href={SITE.mapsHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-12 items-center font-semibold text-paper-50 underline decoration-bronze-500 decoration-2 underline-offset-4 hover:text-bronze-200"
+              >
+                Chỉ đường đến phòng khám
+              </a>
+            </li>
+            <li>
+              <a
                 href={SITE.hotlineHref}
                 className="inline-flex min-h-12 items-center font-semibold text-paper-50 underline decoration-bronze-500 decoration-2 underline-offset-4 hover:text-bronze-200"
               >
