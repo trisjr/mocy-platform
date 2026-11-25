@@ -2,8 +2,11 @@ import Link from "next/link";
 import { SERVICE_FEE_NOTE, serviceFees } from "@/data";
 import { cn } from "@/lib/utils";
 
-/** Bảng chi phí khám & dịch vụ sắc thuốc. Thuần trình bày, dùng được trong cả client lẫn server component. */
-export function FeeNotice({ className }: { className?: string }) {
+/**
+ * Bảng chi phí khám & dịch vụ sắc thuốc. Thuần trình bày, dùng được trong cả client lẫn server component.
+ * `faqLink`: tắt khi đặt trong form nhiều bước, để khách không rời trang và mất thông tin đang nhập.
+ */
+export function FeeNotice({ className, faqLink = true }: { className?: string; faqLink?: boolean }) {
   return (
     <aside
       aria-labelledby="chi-phi-title"
@@ -24,12 +27,14 @@ export function FeeNotice({ className }: { className?: string }) {
         ))}
       </dl>
       <p className="mt-3 text-label text-ink-muted">{SERVICE_FEE_NOTE}</p>
-      <Link
-        href="/#cau-hoi"
-        className="mt-1 inline-flex min-h-12 items-center font-semibold text-herb-700 underline decoration-2 underline-offset-4"
-      >
-        Xem câu hỏi thường gặp
-      </Link>
+      {faqLink && (
+        <Link
+          href="/#cau-hoi"
+          className="mt-1 inline-flex min-h-12 items-center font-semibold text-herb-700 underline decoration-2 underline-offset-4"
+        >
+          Xem câu hỏi thường gặp
+        </Link>
+      )}
     </aside>
   );
 }

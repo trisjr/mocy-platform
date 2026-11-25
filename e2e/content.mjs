@@ -13,8 +13,9 @@ function feeInfo(p) {
     };
   });
 }
-const feeOk = (f) =>
-  !!f && ["Tư vấn trực tuyến", "Miễn phí", "Sắc thuốc sẵn", "(mẫu)"].every((s) => f.text.includes(s)) && f.faqLink && f.controls === 0;
+// Trong form nhiều bước không có link rời trang (tránh mất thông tin đang nhập); ở /luong-y thì có.
+const feeOk = (f, faqLink) =>
+  !!f && ["Tư vấn trực tuyến", "Miễn phí", "Sắc thuốc sẵn", "(mẫu)"].every((s) => f.text.includes(s)) && f.faqLink === faqLink && f.controls === 0;
 
 export async function run(browser) {
   const { rec, results } = makeRecorder("content");
@@ -61,12 +62,12 @@ export async function run(browser) {
     for (const u of ["/dat-lich", "/tu-van", "/luong-y"]) {
       await p.goto(B + u, { waitUntil: "networkidle0" });
       const f = await feeInfo(p);
-      rec("Khối chi phí trên " + u, feeOk(f), f || "không có aside#chi-phi");
+      rec("Khối chi phí trên " + u, feeOk(f, u === "/luong-y"), f || "không có aside#chi-phi");
     }
     await p.goto(B + "/dat-lich", { waitUntil: "networkidle0" });
     await radio(p, "Nhóm triệu chứng", 1);
     await nextStep(p);
-    rec("Khối chi phí vẫn còn ở bước 2 của /dat-lich", feeOk(await feeInfo(p)));
+    rec("Khối chi phí vẫn còn ở bước 2 của /dat-lich", feeOk(await feeInfo(p), false));
 
     // ---- Trang /gioi-thieu
     await p.goto(B + "/gioi-thieu", { waitUntil: "networkidle0" });

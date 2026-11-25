@@ -415,7 +415,7 @@ export function BookingFlow() {
           )}
         </div>
 
-        <FeeNotice className="mt-8" />
+        <FeeNotice className="mt-8" faqLink={false} />
       </div>
     </Container>
   );
