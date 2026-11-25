@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "@/components/ui";
 
 /** Ảnh lớn + dãy ảnh nhỏ để chọn. */
 export function ProductGallery({ images, name }: { images: string[]; name: string }) {

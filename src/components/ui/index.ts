@@ -6,6 +6,7 @@ export * from "./DisclaimerBox";
 export * from "./Input";
 export * from "./Modal";
 export * from "./PriceTag";
+export * from "./SafeImage";
 export * from "./Select";
 export * from "./Stepper";
 export * from "./Textarea";

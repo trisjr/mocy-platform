@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 import type { Article } from "@/types";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "@/components/ui";
 
 export function ArticleCard({ article, priority }: { article: Article; priority?: boolean }) {
   return (
@@ -13,8 +13,8 @@ export function ArticleCard({ article, priority }: { article: Article; priority?
           <SafeImage
             src={article.coverImage}
             alt={article.title}
-            sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 100vw"
-            priority={priority}
+            className="absolute inset-0 size-full"
+            loading={priority ? "eager" : "lazy"}
           />
         </span>
         <span className="flex flex-1 flex-col gap-2 p-4 sm:p-5">

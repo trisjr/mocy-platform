@@ -14,7 +14,7 @@ import { compressImage } from "@/lib/image";
 import { createConsultRequest, StoreError } from "@/lib/store";
 import { isValidPhone } from "@/lib/utils";
 import type { ConsultRequest } from "@/types";
-import { SafeImage } from "@/components/blog/SafeImage";
+import { SafeImage } from "@/components/ui";
 import { SummaryList } from "./SummaryList";
 
 export function ConsultForm() {
@@ -139,7 +139,7 @@ export function ConsultForm() {
         {product && (
           <Card padding="sm" className="mt-5 flex items-center gap-3">
             <span className="relative size-20 shrink-0 overflow-hidden rounded-lg bg-paper-100">
-              <SafeImage src={product.images[0]} alt={product.name} sizes="80px" />
+              <SafeImage src={product.images[0]} alt={product.name} className="absolute inset-0 size-full" />
             </span>
             <span>
               <span className="block text-sm text-ink-muted">Bài thuốc bạn quan tâm</span>

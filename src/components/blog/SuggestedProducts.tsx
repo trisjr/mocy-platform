@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LegalBadge, PriceTag } from "@/components/ui";
 import { getMinPrice, getProductById } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "@/components/ui";
 
 export interface SuggestedProductsProps {
   productIds: string[];
@@ -25,7 +25,7 @@ export function SuggestedProducts({ productIds, title = "Sản phẩm gợi ý",
               className="flex h-full items-center gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:border-herb-500"
             >
               <span className="relative size-20 shrink-0 overflow-hidden rounded-lg bg-paper-100">
-                <SafeImage src={p.images[0]} alt={p.name} sizes="80px" />
+                <SafeImage src={p.images[0]} alt={p.name} className="absolute inset-0 size-full" />
               </span>
               <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
                 <span className="font-semibold text-ink">{p.name}</span>

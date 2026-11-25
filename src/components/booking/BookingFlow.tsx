@@ -3,7 +3,7 @@
 import { CalendarCheck, ChevronLeft, ChevronRight, Hospital, Video } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState, type FormEvent } from "react";
-import { SafeImage } from "@/components/blog/SafeImage";
+import { SafeImage } from "@/components/ui";
 import { Container } from "@/components/layout";
 import { Button, Card, ChoiceCard, Input, Stepper, Textarea } from "@/components/ui";
 import { doctors, symptomGroups } from "@/data";
@@ -232,7 +232,7 @@ export function BookingFlow() {
                       }}
                       media={
                         <span className="relative block size-16 overflow-hidden rounded-full bg-paper-100">
-                          <SafeImage src={d.avatar} alt={d.name} sizes="64px" imageClassName="object-top" />
+                          <SafeImage src={d.avatar} alt={d.name} className="absolute inset-0 size-full object-top" />
                         </span>
                       }
                       title={d.name}

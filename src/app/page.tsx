@@ -14,7 +14,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Container } from "@/components/layout";
 import { ProductCard } from "@/components/store/ProductCard";
-import { SafeImage } from "@/components/store/SafeImage";
+import { SafeImage } from "@/components/ui";
 import { ButtonLink, Card, DisclaimerBox } from "@/components/ui";
 import { articles, doctors, products, symptomGroups, testimonials } from "@/data";
 import { FREE_SHIPPING_THRESHOLD, SITE } from "@/lib/constants";

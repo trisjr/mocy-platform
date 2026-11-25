@@ -19,7 +19,7 @@ import {
 } from "@/lib/store";
 import { OrderSummary } from "./OrderSummary";
 import { QuantityInput } from "./QuantityInput";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "@/components/ui";
 
 export function CartView() {
   const hydrated = useHydrated();

@@ -3,7 +3,7 @@ import { Badge, buttonClasses, LegalBadge, PriceTag } from "@/components/ui";
 import { getMinPrice } from "@/lib/catalog";
 import { SALE_TYPE_LABELS } from "@/lib/constants";
 import type { Product } from "@/types";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "@/components/ui";
 
 /** Thẻ sản phẩm: cả thẻ là link sang trang chi tiết. */
 export function ProductCard({ product }: { product: Product }) {

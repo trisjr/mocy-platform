@@ -2,7 +2,7 @@ import { CalendarCheck } from "lucide-react";
 import { ButtonLink } from "@/components/ui";
 import { getDoctorById } from "@/lib/catalog";
 import type { ArticleBlock } from "@/types";
-import { SafeImage } from "./SafeImage";
+import { SafeImage } from "@/components/ui";
 import { SuggestedProducts } from "./SuggestedProducts";
 
 function BookingCtaBlock({ text, doctorId }: { text?: string; doctorId?: string }) {
@@ -64,7 +64,7 @@ export function ArticleContent({ blocks }: { blocks: ArticleBlock[] }) {
             return (
               <figure key={i} className="my-6">
                 <span className="relative block aspect-[16/10] w-full overflow-hidden rounded-card bg-paper-100">
-                  <SafeImage src={block.src} alt={block.alt} sizes="(min-width: 768px) 768px, 100vw" />
+                  <SafeImage src={block.src} alt={block.alt} className="absolute inset-0 size-full" />
                 </span>
                 {block.caption && (
                   <figcaption className="mt-2 text-center text-base text-ink-muted">{block.caption}</figcaption>

@@ -2,7 +2,8 @@ import { CalendarCheck, ChevronLeft, Clock, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArticleCard, ArticleContent, SafeImage, SuggestedProducts } from "@/components/blog";
+import { ArticleCard, ArticleContent, SuggestedProducts } from "@/components/blog";
+import { SafeImage } from "@/components/ui";
 import { Container } from "@/components/layout";
 import { ButtonLink, DisclaimerBox } from "@/components/ui";
 import { articles } from "@/data";
@@ -67,7 +68,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </header>
 
         <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-card bg-paper-100">
-          <SafeImage src={article.coverImage} alt={article.title} sizes="(min-width: 768px) 768px, 100vw" priority />
+          <SafeImage src={article.coverImage} alt={article.title} className="absolute inset-0 size-full" loading="eager" />
         </div>
 
         <div className="mt-6">
