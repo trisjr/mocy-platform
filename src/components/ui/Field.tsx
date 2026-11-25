@@ -44,8 +44,8 @@ export function Field({ id, label, required, hint, error, className, children }:
 /** Class chung cho ô nhập liệu. */
 export function controlClasses(hasError?: boolean) {
   return cn(
-    "w-full rounded-xl border-2 bg-surface px-4 text-base text-ink placeholder:text-ink-muted/70",
-    "transition-colors focus:border-herb-600 focus:outline-none disabled:bg-paper-200 disabled:opacity-70",
+    "w-full rounded-md border-2 bg-surface px-4 text-base text-ink placeholder:text-ink-muted",
+    "transition-colors focus:border-herb-700 disabled:bg-paper-200 disabled:opacity-70",
     hasError ? "border-danger" : "border-line-strong",
   );
 }

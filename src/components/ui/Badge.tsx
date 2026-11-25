@@ -41,12 +41,32 @@ export interface LegalBadgeProps {
   className?: string;
 }
 
-/** Nhãn pháp lý: Thuốc Đông y / Dược liệu / Thực phẩm bảo vệ sức khỏe. */
+/** Màu chữ và viền của nhãn pháp lý dạng con dấu. */
+const STAMP_CLASSES: Record<Tone, string> = {
+  herb: "text-herb-700",
+  wood: "text-wood-600",
+  bronze: "text-bronze-700",
+  neutral: "text-ink",
+  danger: "text-danger",
+  info: "text-info",
+};
+
+/**
+ * Nhãn pháp lý: Thuốc Đông y / Dược liệu / Thực phẩm bảo vệ sức khỏe.
+ * Kiểu con dấu chữ nhật viền mảnh, khác hẳn pill trạng thái để không bị đọc nhầm là "còn hàng", "mới"...
+ */
 export function LegalBadge({ label, short, className }: LegalBadgeProps) {
   const meta = LEGAL_LABEL_META[label];
   return (
-    <Badge tone={meta.tone} className={className} title={meta.label}>
+    <span
+      title={meta.label}
+      className={cn(
+        "inline-flex items-center rounded-[3px] border-[1.5px] border-current px-2 text-label font-semibold whitespace-nowrap",
+        STAMP_CLASSES[meta.tone],
+        className,
+      )}
+    >
       {short ? meta.short : meta.label}
-    </Badge>
+    </span>
   );
 }

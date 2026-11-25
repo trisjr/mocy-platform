@@ -1,24 +1,18 @@
-import { Leaf } from "lucide-react";
 import Link from "next/link";
+import { Seal } from "@/components/ui";
 import { SITE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
+/** Dấu son "MỘC Y" + tên hiệu thuốc. `inverted`: đặt trên nền gỗ tối (header, footer). */
 export function Logo({ className, inverted }: { className?: string; inverted?: boolean }) {
   return (
-    <Link href="/" className={cn("flex min-h-12 items-center gap-2.5", className)} aria-label={`${SITE.name} – Trang chủ`}>
-      <span
-        className={cn(
-          "flex size-11 shrink-0 items-center justify-center rounded-full",
-          inverted ? "bg-bronze-300 text-wood-900" : "bg-herb-700 text-bronze-100",
-        )}
-      >
-        <Leaf aria-hidden="true" className="size-6" />
-      </span>
+    <Link href="/" className={cn("flex min-h-12 items-center gap-3", className)} aria-label={`${SITE.name} – Trang chủ`}>
+      <Seal className="size-11 -rotate-3" />
       <span className="flex flex-col leading-tight">
-        <span className={cn("font-heading text-xl font-bold", inverted ? "text-paper-50" : "text-wood-800")}>
+        <span className={cn("font-heading text-2xl font-extrabold", inverted ? "text-paper-50" : "text-ink")}>
           {SITE.shortName}
         </span>
-        <span className={cn("text-sm", inverted ? "text-wood-100" : "text-ink-muted")}>Đông y gia truyền</span>
+        <span className={cn("text-label", inverted ? "text-bronze-300" : "text-ink-muted")}>Đông y gia truyền</span>
       </span>
     </Link>
   );

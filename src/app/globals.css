@@ -1,60 +1,65 @@
 @import "tailwindcss";
 
 /*
- * Design tokens Đông y: xanh thảo mộc (herb), nâu gỗ trầm (wood), vàng đồng (bronze), nền kem / giấy dó (paper).
+ * Design tokens "Hiệu thuốc": giấy dó (paper), gỗ trầm (wood), lục thảo (herb), đồng (bronze), son triện (seal).
  * Dùng qua class Tailwind: bg-herb-700, text-wood-800, border-line, bg-paper-100, text-ink, text-ink-muted...
  * Không tự đặt mã màu trong component. Cần màu trong SVG/style thì dùng var(--color-chart-1)...
+ * Thang paper: 50 sáng nhất (giấy nhãn, = surface), 100 là nền trang (giấy dó), 200/300 tối dần (nền phụ, khung ảnh).
+ * Son triện (seal) chỉ dùng cho con dấu; báo lỗi dùng danger (đỏ thẫm) để không lẫn với dấu.
  */
 /* "static": luôn xuất mọi biến CSS, để dùng được var(--color-...) cả khi không có class tương ứng (VD SVG biểu đồ). */
 @theme static {
-  --color-herb-50: #eef4ec;
-  --color-herb-100: #d8e7d3;
-  --color-herb-200: #b4cfac;
-  --color-herb-300: #88b17f;
-  --color-herb-400: #5f9257;
-  --color-herb-500: #46783f;
-  --color-herb-600: #386432;
-  --color-herb-700: #2d5229;
-  --color-herb-800: #234021;
-  --color-herb-900: #1a311a;
+  --color-herb-50: #eef1e8;
+  --color-herb-100: #dde4d5;
+  --color-herb-200: #bfcdb8;
+  --color-herb-300: #98ae93;
+  --color-herb-400: #6e8c6d;
+  --color-herb-500: #4f6f52;
+  --color-herb-600: #3b5a40;
+  --color-herb-700: #2c4a32;
+  --color-herb-800: #213927;
+  --color-herb-900: #18291c;
 
-  --color-wood-50: #f7f0ea;
-  --color-wood-100: #ead9cb;
-  --color-wood-200: #d4b59c;
-  --color-wood-300: #ba8e6d;
-  --color-wood-400: #9c6d4b;
-  --color-wood-500: #7f5337;
-  --color-wood-600: #67422b;
-  --color-wood-700: #533522;
-  --color-wood-800: #3f2819;
-  --color-wood-900: #2e1d12;
+  --color-wood-50: #f5eee6;
+  --color-wood-100: #eaddcf;
+  --color-wood-200: #d6bfa8;
+  --color-wood-300: #b9977a;
+  --color-wood-400: #976f52;
+  --color-wood-500: #7a5338;
+  --color-wood-600: #613f28;
+  --color-wood-700: #4c311f;
+  --color-wood-800: #3b2416;
+  --color-wood-900: #2a190e;
 
-  --color-bronze-50: #fbf4e3;
-  --color-bronze-100: #f4e2b8;
-  --color-bronze-200: #e9c986;
-  --color-bronze-300: #ddae56;
-  --color-bronze-400: #ca9536;
-  --color-bronze-500: #b07d26;
-  --color-bronze-600: #8e631c;
-  --color-bronze-700: #6f4c16;
-  --color-bronze-800: #533911;
+  --color-bronze-50: #f9f2e1;
+  --color-bronze-100: #f1e2be;
+  --color-bronze-200: #e6cd93;
+  --color-bronze-300: #d9b978;
+  --color-bronze-400: #c7a055;
+  --color-bronze-500: #b58b3f;
+  --color-bronze-600: #95702e;
+  --color-bronze-700: #7a5a1f;
+  --color-bronze-800: #5c4316;
 
-  --color-paper-50: #fdfaf3;
-  --color-paper-100: #f8f1e2;
-  --color-paper-200: #efe3c9;
-  --color-paper-300: #e2d0aa;
+  --color-paper-50: #f8f3e7;
+  --color-paper-100: #ede5d3;
+  --color-paper-200: #e3d8bf;
+  --color-paper-300: #d3c4a3;
+
+  --color-seal: #c2452d;
 
   /* Ngữ nghĩa */
   --color-background: var(--color-paper-100);
-  --color-surface: #fffdf8;
-  --color-ink: #2a2019;
-  --color-ink-muted: #5e4f43;
-  --color-line: #ddcfb4;
-  --color-line-strong: #b9a483;
-  --color-danger: #a8261c;
-  --color-danger-soft: #fbe9e6;
+  --color-surface: var(--color-paper-50);
+  --color-ink: #221b16;
+  --color-ink-muted: #5a4a3c;
+  --color-line: #cfc1a1;
+  /* Viền ô nhập, nút chọn: đủ 3:1 trên nền giấy. */
+  --color-line-strong: #8c7a5c;
+  --color-danger: #9b1c31;
+  --color-danger-soft: #f6e3e3;
   --color-info: #285a73;
-  --color-info-soft: #e5f0f5;
+  --color-info-soft: #e2ecef;
 
   /* Màu biểu đồ (Admin), theo thứ tự series */
   --color-chart-1: var(--color-herb-600);
@@ -64,10 +69,14 @@
   --color-chart-5: var(--color-info);
 
   --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-noto-serif), ui-serif, Georgia, serif;
+  --font-heading: var(--font-alegreya), ui-serif, Georgia, serif;
 
-  --radius-card: 1rem;
-  --shadow-card: 0 1px 2px rgb(63 40 25 / 0.06), 0 4px 16px rgb(63 40 25 / 0.06);
+  /* Chữ nhãn nhỏ nhất (nhãn pháp lý, chú thích): 16px. */
+  --text-label: 0.94rem;
+  --text-label--line-height: 1.5;
+
+  --radius-card: 0.25rem;
+  --shadow-card: 0 1px 0 rgb(59 36 22 / 0.1), 0 14px 22px -20px rgb(59 36 22 / 0.7);
 }
 
 @layer base {
@@ -89,13 +98,23 @@
   h3,
   h4 {
     font-family: var(--font-heading);
-    color: var(--color-wood-800);
-    line-height: 1.3;
+    color: var(--color-ink);
+    line-height: 1.2;
     font-weight: 700;
   }
 
+  /* Alegreya mặc định dùng số kiểu cổ (thấp); số liệu, giá, năm kinh nghiệm cần số cao cho dễ đọc. */
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-heading {
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Vòng focus đậm màu mực; trên nền gỗ (class on-dark) đổi sang màu đồng sáng. */
   :focus-visible {
-    outline: 3px solid var(--color-bronze-400);
+    outline: 3px solid var(--focus-ring, var(--color-ink));
     outline-offset: 2px;
   }
 
@@ -105,6 +124,72 @@
   }
 
   ::selection {
-    background-color: var(--color-bronze-100);
+    background-color: var(--color-bronze-200);
+  }
+}
+
+/* Vùng nền tối (biển hiệu gỗ, footer, dải tủ thuốc): vòng focus màu đồng sáng cho đủ tương phản. */
+@utility on-dark {
+  --focus-ring: var(--color-bronze-300);
+}
+
+/* Vân giấy dó: hạt mịn + xơ giấy. Chỉ dùng cho nền trang khách hàng. */
+@utility paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'220'%20height%3D'220'%3E%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'0.85'%20numOctaves%3D'3'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%200.23529411764705882%200%200%200%200%200.1568627450980392%200%200%200%200%200.0784313725490196%200%200%200%200.54%20-0.21'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'220'%20height%3D'220'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'300'%20height%3D'300'%3E%3Cg%20fill%3D'none'%20stroke%3D'%236b4a2a'%20stroke-opacity%3D'0.13'%20stroke-width%3D'0.7'%20stroke-linecap%3D'round'%3E%3Cpath%20d%3D'M12%2040c30%206%2052-4%2080%202'%2F%3E%3Cpath%20d%3D'M150%2022c20%2010%2044%208%2070%2016'%2F%3E%3Cpath%20d%3D'M40%20130c24-8%2040%206%2066%200'%2F%3E%3Cpath%20d%3D'M180%20110c16%2014%2040%2010%2064%2020'%2F%3E%3Cpath%20d%3D'M20%20220c34%204%2050-10%2084-2'%2F%3E%3Cpath%20d%3D'M140%20200c30-6%2046%208%2080%204'%2F%3E%3Cpath%20d%3D'M230%20260c20%204%2036-6%2060%200'%2F%3E%3Cpath%20d%3D'M70%20280c18-6%2030%202%2048-2'%2F%3E%3Cpath%20d%3D'M250%2060c10%2012%2026%2014%2040%2018'%2F%3E%3Cpath%20d%3D'M100%2080c8%2010%2020%2012%2034%2010'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+
+/* Xơ giấy nhạt cho tờ nhãn, phiếu. */
+@utility paper-fiber {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'300'%20height%3D'300'%3E%3Cg%20fill%3D'none'%20stroke%3D'%236b4a2a'%20stroke-opacity%3D'0.13'%20stroke-width%3D'0.7'%20stroke-linecap%3D'round'%3E%3Cpath%20d%3D'M12%2040c30%206%2052-4%2080%202'%2F%3E%3Cpath%20d%3D'M150%2022c20%2010%2044%208%2070%2016'%2F%3E%3Cpath%20d%3D'M40%20130c24-8%2040%206%2066%200'%2F%3E%3Cpath%20d%3D'M180%20110c16%2014%2040%2010%2064%2020'%2F%3E%3Cpath%20d%3D'M20%20220c34%204%2050-10%2084-2'%2F%3E%3Cpath%20d%3D'M140%20200c30-6%2046%208%2080%204'%2F%3E%3Cpath%20d%3D'M230%20260c20%204%2036-6%2060%200'%2F%3E%3Cpath%20d%3D'M70%20280c18-6%2030%202%2048-2'%2F%3E%3Cpath%20d%3D'M250%2060c10%2012%2026%2014%2040%2018'%2F%3E%3Cpath%20d%3D'M100%2080c8%2010%2020%2012%2034%2010'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+
+/* Dải hồi văn đồng dưới biển hiệu và trên footer. */
+@utility fret {
+  height: 12px;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'16'%20height%3D'12'%3E%3Cpath%20d%3D'M1%2011V1h12v8H5V5h4'%20fill%3D'none'%20stroke%3D'%23B58B3F'%20stroke-width%3D'1.5'%2F%3E%3C%2Fsvg%3E") repeat-x 0 0 / 16px 12px;
+}
+
+/*
+ * Khung nhãn hai nét vẽ ĐÈ lên ảnh bằng ::after, để ảnh vẫn phủ kín khung cha (e2e kiểm absolute inset-0).
+ * Đổi màu nét bằng biến --frame.
+ */
+@utility label-frame {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 1.5px var(--frame, var(--color-herb-700)),
+      inset 0 0 0 4px var(--color-paper-50),
+      inset 0 0 0 5px var(--frame, var(--color-herb-700));
+  }
+}
+
+/* Dấu cắt ở hai góc tờ nhãn in. */
+@utility crop-marks {
+  position: relative;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 0 solid var(--color-ink-muted);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  &::before {
+    top: -8px;
+    left: -8px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+  }
+  &::after {
+    right: -8px;
+    bottom: -8px;
+    border-top-width: 1px;
+    border-left-width: 1px;
   }
 }

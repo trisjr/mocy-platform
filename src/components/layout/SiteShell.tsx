@@ -14,8 +14,16 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return <>{children}</>;
   return (
     <>
+      <a
+        href="#noi-dung"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-paper-50 focus:px-4 focus:py-3 focus:font-semibold focus:text-ink"
+      >
+        Bỏ qua, đến nội dung chính
+      </a>
       <Header />
-      <main className="flex-1 pb-20 md:pb-0">{children}</main>
+      <main id="noi-dung" className="paper-grain flex-1">
+        {children}
+      </main>
       {footer}
       <MobileNav />
     </>

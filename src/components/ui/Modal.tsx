@@ -48,8 +48,8 @@ export function Modal({ open, onClose, title, children, footer, size = "md", cla
         if (e.target === e.currentTarget) onClose();
       }}
       className={cn(
-        "m-0 mt-auto w-full max-w-none rounded-t-2xl bg-surface p-0 text-ink shadow-xl backdrop:bg-wood-900/50",
-        "sm:m-auto sm:rounded-2xl",
+        "m-0 mt-auto w-full max-w-none rounded-t-lg bg-surface p-0 text-ink shadow-xl backdrop:bg-wood-900/50",
+        "sm:m-auto sm:rounded-lg",
         SIZE[size],
         className,
       )}

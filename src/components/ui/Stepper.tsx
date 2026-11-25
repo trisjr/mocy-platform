@@ -19,8 +19,8 @@ export function Stepper({ steps, current, onStepClick, className }: StepperProps
         <p className="font-semibold text-wood-800">
           Bước {current + 1}/{steps.length}: {steps[current]}
         </p>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-paper-200" aria-hidden="true">
-          <div className="h-full rounded-full bg-herb-600 transition-all" style={{ width: `${percent}%` }} />
+        <div className="mt-2 h-1.5 overflow-hidden bg-paper-300" aria-hidden="true">
+          <div className="h-full bg-herb-700 transition-all" style={{ width: `${percent}%` }} />
         </div>
       </div>
       <ol className="hidden items-start sm:flex">
@@ -31,9 +31,9 @@ export function Stepper({ steps, current, onStepClick, className }: StepperProps
           const circle = (
             <span
               className={cn(
-                "flex size-10 shrink-0 items-center justify-center rounded-full border-2 font-bold",
-                done && "border-herb-700 bg-herb-700 text-white",
-                active && "border-herb-700 bg-surface text-herb-700",
+                "flex size-10 shrink-0 items-center justify-center rounded-[3px] border-2 font-bold",
+                done && "border-herb-700 bg-herb-700 text-paper-50",
+                active && "border-herb-700 bg-surface text-herb-800",
                 !done && !active && "border-line-strong bg-surface text-ink-muted",
               )}
             >

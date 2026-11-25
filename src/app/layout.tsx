@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Be_Vietnam_Pro, Noto_Serif } from "next/font/google";
+import { Alegreya, Be_Vietnam_Pro } from "next/font/google";
 import { Footer, SiteShell } from "@/components/layout";
 import { SITE } from "@/lib/constants";
 import "./globals.css";
@@ -11,10 +11,11 @@ const beVietnam = Be_Vietnam_Pro({
   display: "swap",
 });
 
-const notoSerif = Noto_Serif({
-  variable: "--font-noto-serif",
+// Alegreya: font biến thiên (400–900), có nghiêng cho trích dẫn.
+const alegreya = Alegreya({
+  variable: "--font-alegreya",
   subsets: ["latin", "vietnamese"],
-  weight: ["600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -28,12 +29,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2d5229",
+  themeColor: "#3b2416",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="vi" className={`${beVietnam.variable} ${notoSerif.variable} h-full antialiased`}>
+    <html lang="vi" className={`${beVietnam.variable} ${alegreya.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <SiteShell footer={<Footer />}>{children}</SiteShell>
       </body>

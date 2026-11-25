@@ -21,7 +21,7 @@ export function PriceTag({ price, compareAtPrice, prefix, size = "md", className
   return (
     <span className={cn("inline-flex flex-wrap items-baseline gap-x-2", className)}>
       {prefix && <span className="text-base text-ink-muted">{prefix}</span>}
-      <span className={cn("font-bold text-bronze-700", SIZE[size])}>{formatPrice(price)}</span>
+      <span className={cn("font-bold text-ink tabular-nums", SIZE[size])}>{formatPrice(price)}</span>
       {showCompare && (
         <span className="text-base text-ink-muted line-through">
           <span className="sr-only">Giá gốc </span>

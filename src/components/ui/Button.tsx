@@ -6,11 +6,11 @@ export type ButtonVariant = "primary" | "secondary" | "accent" | "outline" | "gh
 export type ButtonSize = "md" | "lg";
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: "bg-herb-700 text-white hover:bg-herb-800",
-  secondary: "bg-wood-700 text-white hover:bg-wood-800",
+  primary: "bg-herb-700 text-paper-50 hover:bg-herb-800",
+  secondary: "bg-wood-800 text-paper-50 hover:bg-wood-900",
   accent: "bg-bronze-300 text-wood-900 hover:bg-bronze-200",
-  outline: "border-2 border-herb-700 bg-surface text-herb-700 hover:bg-herb-50",
-  ghost: "text-herb-700 hover:bg-herb-50",
+  outline: "border-2 border-herb-700 bg-surface text-herb-800 hover:bg-herb-50",
+  ghost: "text-herb-800 hover:bg-herb-50",
   danger: "bg-danger text-white hover:opacity-90",
 };
 
@@ -28,7 +28,7 @@ interface ButtonStyleProps {
 /** Class của nút, dùng khi cần áp kiểu nút cho phần tử khác. */
 export function buttonClasses({ variant = "primary", size = "md", fullWidth }: ButtonStyleProps = {}) {
   return cn(
-    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold leading-tight transition-colors",
+    "inline-flex items-center justify-center gap-2 rounded-md font-semibold leading-tight transition-colors",
     "disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],

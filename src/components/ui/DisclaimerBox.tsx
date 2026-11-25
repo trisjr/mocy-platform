@@ -1,4 +1,3 @@
-import { Info } from "lucide-react";
 import type { ReactNode } from "react";
 import { GENERAL_DISCLAIMER, SUPPLEMENT_DISCLAIMER } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -11,16 +10,10 @@ export interface DisclaimerBoxProps {
   className?: string;
 }
 
+/** Lời lưu ý in như chú thích trên nhãn thuốc: nét đồng bên trái, không icon. */
 export function DisclaimerBox({ variant = "supplement", children, className }: DisclaimerBoxProps) {
   return (
-    <div
-      role="note"
-      className={cn(
-        "flex gap-3 rounded-xl border border-bronze-200 border-l-4 border-l-bronze-400 bg-bronze-50 p-4 text-ink",
-        className,
-      )}
-    >
-      <Info aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-bronze-700" />
+    <div role="note" className={cn("border-l-4 border-bronze-500 bg-bronze-50 px-4 py-3 text-ink", className)}>
       <p className={cn(variant === "supplement" && "font-semibold")}>
         {children ?? (variant === "supplement" ? SUPPLEMENT_DISCLAIMER : GENERAL_DISCLAIMER)}
       </p>

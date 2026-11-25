@@ -1,4 +1,3 @@
-import { CheckCircle2, Circle } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +25,7 @@ export function ChoiceCard({ selected, onSelect, title, description, media, disa
       disabled={disabled}
       onClick={onSelect}
       className={cn(
-        "flex min-h-14 w-full items-center gap-3 rounded-xl border-2 bg-surface p-4 text-left transition-colors",
+        "flex min-h-14 w-full items-center gap-3 rounded-md border-2 bg-surface p-4 text-left transition-colors",
         "disabled:cursor-not-allowed disabled:opacity-50",
         selected ? "border-herb-700 bg-herb-50" : "border-line-strong hover:border-herb-400",
         className,
@@ -37,11 +36,15 @@ export function ChoiceCard({ selected, onSelect, title, description, media, disa
         <span className="font-semibold text-ink">{title}</span>
         {description && <span className="text-ink-muted">{description}</span>}
       </span>
-      {selected ? (
-        <CheckCircle2 aria-hidden="true" className="size-6 shrink-0 text-herb-700" />
-      ) : (
-        <Circle aria-hidden="true" className="size-6 shrink-0 text-line-strong" />
-      )}
+      <span
+        aria-hidden="true"
+        className={cn(
+          "flex size-6 shrink-0 items-center justify-center rounded-full border-2",
+          selected ? "border-herb-700" : "border-line-strong",
+        )}
+      >
+        {selected && <span className="size-3 rounded-full bg-herb-700" />}
+      </span>
     </button>
   );
 }
