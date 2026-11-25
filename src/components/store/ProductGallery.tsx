@@ -9,11 +9,11 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
   const [active, setActive] = useState(0);
   return (
     <div className="flex flex-col gap-3">
-      <div className="aspect-square overflow-hidden rounded-card border border-line bg-paper-200">
+      <div className="label-frame paper-fiber relative aspect-square overflow-hidden bg-surface shadow-card">
         <SafeImage
           src={images[active]}
           alt={images.length > 1 ? `${name}, ảnh ${active + 1}/${images.length}` : name}
-          className="size-full"
+          className="absolute inset-0 size-full"
           loading="eager"
         />
       </div>
@@ -27,7 +27,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
                 aria-label={`Xem ảnh ${i + 1}`}
                 aria-pressed={i === active}
                 className={cn(
-                  "block size-20 overflow-hidden rounded-xl border-2 bg-paper-200",
+                  "block size-20 overflow-hidden rounded-[3px] border-2 bg-surface",
                   i === active ? "border-herb-700" : "border-line hover:border-herb-400",
                 )}
               >

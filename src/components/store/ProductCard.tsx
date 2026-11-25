@@ -48,11 +48,25 @@ export function ProductCard({ product }: { product: Product }) {
  * Tờ nhãn in: nền giấy, đường cắt nét đứt giữa các ô, dấu cắt ở góc.
  * Ô cuối mỗi hàng/cột tự mất viền nhờ lề âm + overflow-hidden, nên dùng được với mọi số cột.
  */
-export function ProductSheet({ className, children }: { className?: string; children: ReactNode }) {
+export function ProductSheet({
+  className,
+  columns = 4,
+  children,
+}: {
+  className?: string;
+  /** Số cột trên màn lớn. */
+  columns?: 3 | 4;
+  children: ReactNode;
+}) {
   return (
     <div className={cn("crop-marks paper-fiber bg-surface shadow-card", className)}>
       <div className="overflow-hidden">
-        <ul className="-mr-px -mb-px grid grid-cols-2 lg:grid-cols-4 [&>li]:border-r [&>li]:border-b [&>li]:border-dashed [&>li]:border-line-strong/60">
+        <ul
+          className={cn(
+            "-mr-px -mb-px grid grid-cols-2 [&>li]:border-r [&>li]:border-b [&>li]:border-dashed [&>li]:border-line-strong/60",
+            columns === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3",
+          )}
+        >
           {children}
         </ul>
       </div>

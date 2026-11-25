@@ -16,12 +16,12 @@ export interface QuantityInputProps {
 /** Bộ tăng giảm số lượng, nút 48px. */
 export function QuantityInput({ value, onChange, min = 1, max = 99, label, className }: QuantityInputProps) {
   const btn =
-    "flex size-12 items-center justify-center rounded-xl text-wood-800 hover:bg-paper-200 disabled:cursor-not-allowed disabled:opacity-40";
+    "flex size-12 items-center justify-center rounded-md text-wood-800 hover:bg-paper-200 disabled:cursor-not-allowed disabled:opacity-40";
   return (
     <div
       role="group"
       aria-label={`Số lượng ${label}`}
-      className={cn("inline-flex items-center rounded-xl border-2 border-line-strong bg-surface", className)}
+      className={cn("inline-flex items-center rounded-md border-2 border-line-strong bg-surface", className)}
     >
       <button
         type="button"

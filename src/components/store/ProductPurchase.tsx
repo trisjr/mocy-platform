@@ -1,6 +1,5 @@
 "use client";
 
-import { CheckCircle2, ShoppingCart, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -96,7 +95,6 @@ export function ProductPurchase({ product }: { product: Product }) {
         <Button
           size="lg"
           variant="outline"
-          icon={<ShoppingCart aria-hidden="true" className="size-5" />}
           onClick={() => {
             if (add()) setAdded(`${quantity} × ${product.name} (${variant.label})`);
           }}
@@ -105,7 +103,6 @@ export function ProductPurchase({ product }: { product: Product }) {
         </Button>
         <Button
           size="lg"
-          icon={<Zap aria-hidden="true" className="size-5" />}
           onClick={() => {
             if (add()) router.push("/thanh-toan");
           }}
@@ -116,12 +113,9 @@ export function ProductPurchase({ product }: { product: Product }) {
 
       <div aria-live="polite">
         {added && (
-          <div className="flex flex-col gap-3 rounded-xl border border-herb-200 bg-herb-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="flex items-start gap-2 text-herb-800">
-              <CheckCircle2 aria-hidden="true" className="mt-0.5 size-6 shrink-0" />
-              <span>
-                Đã thêm <strong>{added}</strong> vào giỏ hàng.
-              </span>
+          <div className="flex flex-col gap-1 border-l-4 border-herb-700 bg-herb-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            <p className="text-herb-800">
+              Đã thêm <strong>{added}</strong> vào giỏ hàng.
             </p>
             <Link href="/gio-hang" className="min-h-12 shrink-0 content-center font-semibold text-herb-700 underline">
               Xem giỏ hàng
@@ -129,7 +123,7 @@ export function ProductPurchase({ product }: { product: Product }) {
           </div>
         )}
         {error && (
-          <p role="alert" className="rounded-xl bg-danger-soft p-4 text-danger">
+          <p role="alert" className="border-l-4 border-danger bg-danger-soft px-4 py-3 text-danger">
             {error}
           </p>
         )}

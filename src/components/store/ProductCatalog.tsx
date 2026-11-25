@@ -1,6 +1,5 @@
 "use client";
 
-import { SlidersHorizontal, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Button, ButtonLink, Card, DisclaimerBox, Input, Select } from "@/components/ui";
@@ -10,7 +9,8 @@ import { PRODUCT_CATEGORY_LABELS } from "@/lib/constants";
 import { formatPrice } from "@/lib/format";
 import { cn, normalizeText } from "@/lib/utils";
 import type { ProductCategory, SaleType } from "@/types";
-import { ProductCard } from "./ProductCard";
+import { ProductCard, ProductSheet } from "./ProductCard";
+import { SupplementNotice } from "./SupplementNotice";
 
 /** Tên query trên URL: ?q=&danh-muc=&nhom=&gia=&tinh-trang= */
 const PARAM = { q: "q", category: "danh-muc", group: "nhom", price: "gia", status: "tinh-trang" } as const;
@@ -182,7 +182,6 @@ export function ProductCatalog() {
           fullWidth
           aria-expanded={showFilters}
           aria-controls="bo-loc-khac"
-          icon={<SlidersHorizontal aria-hidden="true" className="size-5" />}
           onClick={() => setShowFilters((v) => !v)}
         >
           {showFilters ? "Ẩn bộ lọc" : "Bộ lọc khác"}
@@ -213,32 +212,35 @@ export function ProductCatalog() {
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-double border-line-strong/70 pt-4">
         <p aria-live="polite" className="font-semibold">
           {results.length > 0 ? `Tìm thấy ${results.length} sản phẩm` : "Không có sản phẩm phù hợp"}
           {group && <span className="font-normal text-ink-muted"> cho nhóm “{group.name}”</span>}
         </p>
         {activeCount > 0 && (
-          <Button variant="ghost" icon={<X aria-hidden="true" className="size-5" />} onClick={clearAll}>
+          <Button variant="ghost" className="underline decoration-2 underline-offset-4" onClick={clearAll}>
             Xóa bộ lọc
           </Button>
         )}
       </div>
 
       {price && status?.saleType !== "retail" && (
-        <p className="rounded-xl bg-info-soft p-4 text-info">
+        <p className="border-l-4 border-info bg-info-soft px-4 py-3 text-info">
           Đang lọc theo giá nên tạm ẩn các bài thuốc cần tư vấn, vì giá của chúng tùy theo thể trạng từng người.
         </p>
       )}
 
       {results.length > 0 ? (
-        <ul className="grid grid-cols-1 gap-5 min-[520px]:grid-cols-2 lg:grid-cols-3">
-          {results.map((p) => (
-            <li key={p.id}>
-              <ProductCard product={p} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ProductSheet className="mt-2">
+            {results.map((p) => (
+              <li key={p.id}>
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ProductSheet>
+          <SupplementNotice products={results} className="mt-2" />
+        </>
       ) : (
         <Card padding="lg" className="text-center">
           <p className="text-lg font-semibold">Chưa tìm thấy sản phẩm phù hợp với bộ lọc.</p>
@@ -266,10 +268,10 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "min-h-12 shrink-0 rounded-full border-2 px-5 font-semibold whitespace-nowrap transition-colors",
+        "min-h-12 shrink-0 rounded-[3px] border-2 px-4 font-semibold whitespace-nowrap transition-colors",
         active
-          ? "border-herb-700 bg-herb-700 text-white"
-          : "border-line-strong bg-surface text-wood-800 hover:border-herb-400",
+          ? "border-wood-800 bg-wood-800 text-paper-50"
+          : "border-line-strong bg-surface text-ink hover:border-wood-600",
       )}
     >
       {children}
