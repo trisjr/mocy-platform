@@ -68,7 +68,55 @@ export async function run(browser) {
     await nextStep(p);
     rec("Khối chi phí vẫn còn ở bước 2 của /dat-lich", feeOk(await feeInfo(p)));
 
+    // ---- Trang /gioi-thieu
+    await p.goto(B + "/gioi-thieu", { waitUntil: "networkidle0" });
+    const about = await p.evaluate(() => ({
+      h1: document.querySelector("h1")?.innerText,
+      ids: ["cau-chuyen", "duoc-lieu", "khong-gian", "giay-phep"].filter((id) => document.getElementById(id)),
+      legal: document.getElementById("giay-phep")?.innerText || "",
+      docLinks: document.querySelectorAll('#giay-phep a[href^="/luong-y#"]').length,
+      booking: !!document.querySelector('main a[href="/dat-lich"], #giay-phep ~ section a[href="/dat-lich"]'),
+    }));
+    rec("/gioi-thieu có h1 và đủ 4 mục", about.h1 === "Về Mộc Y" && about.ids.length === 4, { h1: about.h1, ids: about.ids });
+    rec(
+      "/gioi-thieu có giấy phép và CCHN 3 lương y",
+      ["0125/HNO-GPHĐ", "004512/HNO-CCHN", "0109876543"].every((s) => about.legal.includes(s)) && about.docLinks === 3,
+      { docLinks: about.docLinks },
+    );
+    rec("/gioi-thieu có nút đặt lịch", about.booking);
+
+    // ---- Điều hướng tới /gioi-thieu
+    await p.goto(B + "/", { waitUntil: "networkidle0" });
+    const navD = await p.evaluate(() => ({
+      footer: !!document.querySelector('footer a[href="/gioi-thieu"]'),
+      home: !!document.querySelector('#quy-trinh a[href="/gioi-thieu"]'),
+    }));
+    rec("Có link /gioi-thieu ở footer và khối quy trình", navD.footer && navD.home, navD);
+
     rec("Không lỗi console hay request >= 400", errs.length === 0, errs.slice(0, 5));
+
+    // Nav đáy điện thoại giữ 5 ô, không có /gioi-thieu.
+    const m = await newPage(ctx, "m", errs, { width: 390, height: 844 });
+    await m.goto(B + "/", { waitUntil: "networkidle0" });
+    const mob = await m.evaluate(() => [...document.querySelectorAll('nav[aria-label="Điều hướng nhanh"] a')].map((a) => a.getAttribute("href")));
+    rec("390px: nav đáy có 5 ô, không có /gioi-thieu", mob.length === 5 && !mob.includes("/gioi-thieu"), mob);
+
+    // Header ở các mốc chật (giữ nguyên số mục nav): không tràn, logo không bị cắt, link nav không xuống dòng.
+    for (const w of [768, 1024, 1280]) {
+      await p.setViewport({ width: w, height: 800 });
+      await sleep(300);
+      const h = await p.evaluate(() => {
+        const logo = document.querySelector('header a[aria-label$="Trang chủ"]');
+        const links = [...document.querySelectorAll('nav[aria-label="Điều hướng chính"] a')];
+        return {
+          sw: document.documentElement.scrollWidth,
+          iw: innerWidth,
+          logo: logo ? [logo.scrollWidth, logo.clientWidth] : null,
+          tall: links.filter((a) => a.getBoundingClientRect().height > 56).map((a) => a.innerText),
+        };
+      });
+      rec(w + "px: header vừa, logo không bị cắt", h.sw <= h.iw && h.logo && h.logo[0] <= h.logo[1] && h.tall.length === 0, h);
+    }
   } finally {
     await ctx.close();
   }

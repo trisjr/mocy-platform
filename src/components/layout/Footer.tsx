@@ -4,6 +4,7 @@ import { Container } from "./Container";
 import { Logo } from "./Logo";
 
 const LINKS = [
+  { href: "/gioi-thieu", label: "Về Mộc Y" },
   { href: "/san-pham", label: "Sản phẩm & Dược liệu" },
   { href: "/dat-lich", label: "Đặt lịch tư vấn" },
   { href: "/luong-y", label: "Đội ngũ lương y" },

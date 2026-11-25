@@ -116,6 +116,7 @@ export default function HomePage() {
             id="quy-trinh"
             title="Quy trình khám & bốc thuốc"
             intro="Từ lúc đặt lịch đến khi thuốc về tận nhà, lương y theo sát từng bước."
+            more={{ href: "/gioi-thieu", label: "Về Mộc Y & tiêu chuẩn dược liệu" }}
           />
           <ol className="mt-7 grid border-t-2 border-double border-line-strong/70 sm:grid-cols-2 lg:grid-cols-4">
             {careSteps.map((s, i) => (
