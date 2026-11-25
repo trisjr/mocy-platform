@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# e2e output (ảnh chụp, ảnh test sinh lúc chạy)
+/e2e/.output/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
