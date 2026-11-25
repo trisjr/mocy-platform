@@ -14,6 +14,7 @@ import { createConsultRequest, StoreError } from "@/lib/store";
 import { isValidPhone } from "@/lib/utils";
 import type { ConsultRequest } from "@/types";
 import { SafeImage } from "@/components/ui";
+import { FeeNotice } from "./FeeNotice";
 import { SummaryList } from "./SummaryList";
 
 export function ConsultForm() {
@@ -245,6 +246,8 @@ export function ConsultForm() {
             </Button>
           </div>
         </form>
+
+        <FeeNotice className="mt-8" faqLink={false} />
       </div>
     </Container>
   );

@@ -14,6 +14,7 @@ import { getAvailableSlots, getUpcomingWorkingDates } from "@/lib/schedule";
 import { createAppointment, StoreError, useHydrated, useStore } from "@/lib/store";
 import { isValidPhone } from "@/lib/utils";
 import type { ConsultMode, OnlineChannel } from "@/types";
+import { FeeNotice } from "./FeeNotice";
 import { PillOption } from "./PillOption";
 import { SummaryList } from "./SummaryList";
 
@@ -413,6 +414,8 @@ export function BookingFlow() {
             </div>
           )}
         </div>
+
+        <FeeNotice className="mt-8" faqLink={false} />
       </div>
     </Container>
   );

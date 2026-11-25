@@ -256,3 +256,25 @@ export interface ConsultRequest {
   prescriptionImage?: string;
   customer: CustomerInfo;
 }
+
+/** Một bước trong quy trình khám – bốc thuốc – giao thuốc. */
+export interface CareStep {
+  title: string;
+  text: string;
+}
+
+/** Một dòng trong bảng chi phí khám & dịch vụ. */
+export interface ServiceFee {
+  id: string;
+  name: string;
+  /** Chuỗi hiển thị, VD "Miễn phí" hoặc "20.000đ/thang". */
+  price: string;
+  note?: string;
+}
+
+/** Câu hỏi thường gặp. */
+export interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+}

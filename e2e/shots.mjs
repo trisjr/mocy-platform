@@ -9,6 +9,7 @@ const PAGES = [
   ["gio-hang", "/gio-hang"],
   ["dat-lich", "/dat-lich"],
   ["luong-y", "/luong-y"],
+  ["gioi-thieu", "/gioi-thieu"],
   ["kien-thuc", "/kien-thuc"],
   ["kt-detail", "/kien-thuc/giu-ty-vi-khoe-moi-ngay"],
   ["tu-van", "/tu-van?san-pham=bai-thuoc-an-than"],
