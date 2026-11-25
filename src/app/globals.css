@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens Đông y: xanh thảo mộc (herb), nâu gỗ trầm (wood), vàng đồng (bronze), nền kem / giấy dó (paper).
+ * Dùng qua class Tailwind: bg-herb-700, text-wood-800, border-line, bg-paper-100, text-ink, text-ink-muted...
+ * Không tự đặt mã màu trong component. Cần màu trong SVG/style thì dùng var(--color-chart-1)...
+ */
+/* "static": luôn xuất mọi biến CSS, để dùng được var(--color-...) cả khi không có class tương ứng (VD SVG biểu đồ). */
+@theme static {
+  --color-herb-50: #eef4ec;
+  --color-herb-100: #d8e7d3;
+  --color-herb-200: #b4cfac;
+  --color-herb-300: #88b17f;
+  --color-herb-400: #5f9257;
+  --color-herb-500: #46783f;
+  --color-herb-600: #386432;
+  --color-herb-700: #2d5229;
+  --color-herb-800: #234021;
+  --color-herb-900: #1a311a;
+
+  --color-wood-50: #f7f0ea;
+  --color-wood-100: #ead9cb;
+  --color-wood-200: #d4b59c;
+  --color-wood-300: #ba8e6d;
+  --color-wood-400: #9c6d4b;
+  --color-wood-500: #7f5337;
+  --color-wood-600: #67422b;
+  --color-wood-700: #533522;
+  --color-wood-800: #3f2819;
+  --color-wood-900: #2e1d12;
+
+  --color-bronze-50: #fbf4e3;
+  --color-bronze-100: #f4e2b8;
+  --color-bronze-200: #e9c986;
+  --color-bronze-300: #ddae56;
+  --color-bronze-400: #ca9536;
+  --color-bronze-500: #b07d26;
+  --color-bronze-600: #8e631c;
+  --color-bronze-700: #6f4c16;
+  --color-bronze-800: #533911;
+
+  --color-paper-50: #fdfaf3;
+  --color-paper-100: #f8f1e2;
+  --color-paper-200: #efe3c9;
+  --color-paper-300: #e2d0aa;
+
+  /* Ngữ nghĩa */
+  --color-background: var(--color-paper-100);
+  --color-surface: #fffdf8;
+  --color-ink: #2a2019;
+  --color-ink-muted: #5e4f43;
+  --color-line: #ddcfb4;
+  --color-line-strong: #b9a483;
+  --color-danger: #a8261c;
+  --color-danger-soft: #fbe9e6;
+  --color-info: #285a73;
+  --color-info-soft: #e5f0f5;
+
+  /* Màu biểu đồ (Admin), theo thứ tự series */
+  --color-chart-1: var(--color-herb-600);
+  --color-chart-2: var(--color-bronze-400);
+  --color-chart-3: var(--color-wood-500);
+  --color-chart-4: var(--color-herb-300);
+  --color-chart-5: var(--color-info);
+
+  --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-noto-serif), ui-serif, Georgia, serif;
+
+  --radius-card: 1rem;
+  --shadow-card: 0 1px 2px rgb(63 40 25 / 0.06), 0 4px 16px rgb(63 40 25 / 0.06);
+}
+
+@layer base {
+  html {
+    /* Cỡ chữ nền 17px: mọi đơn vị rem của Tailwind lớn hơn một chút, hợp người trung niên. */
+    font-size: 106.25%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.65;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    color: var(--color-wood-800);
+    line-height: 1.3;
+    font-weight: 700;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-bronze-400);
+    outline-offset: 2px;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background-color: var(--color-bronze-100);
+  }
+}
