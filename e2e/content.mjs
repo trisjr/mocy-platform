@@ -94,6 +94,37 @@ export async function run(browser) {
     }));
     rec("Có link /gioi-thieu ở footer và khối quy trình", navD.footer && navD.home, navD);
 
+    // ---- Trang /chinh-sach
+    await p.goto(B + "/chinh-sach", { waitUntil: "networkidle0" });
+    const pol = await p.evaluate(() => {
+      const t = (id) => document.getElementById(id)?.innerText || "";
+      return {
+        h1: document.querySelector("h1")?.innerText,
+        ship: t("giao-hang"),
+        ret: t("doi-tra"),
+        priv: t("bao-mat"),
+        all: document.body.innerText,
+        footer: document.querySelectorAll('footer a[href^="/chinh-sach#"]').length,
+      };
+    });
+    rec(
+      "/chinh-sach có h1, 3 mục và số liệu đúng",
+      pol.h1 === "Chính sách" && pol.ship.includes("500.000đ") && pol.ship.includes("30.000đ") && pol.ret.includes("48 giờ") && pol.priv.includes("không bán") && !/vô trùng/i.test(pol.all),
+      { h1: pol.h1 },
+    );
+    rec("Footer có 3 link chính sách", pol.footer === 3, pol.footer);
+    await p.goto(B + "/", { waitUntil: "networkidle0" });
+    await Promise.all([
+      p.waitForFunction(() => location.pathname.startsWith("/chinh-sach"), { timeout: 6000 }).catch(() => {}),
+      p.$eval('footer a[href="/chinh-sach#doi-tra"]', (a) => a.click()),
+    ]);
+    await sleep(800);
+    const anchor = await p.evaluate(() => {
+      const r = document.getElementById("doi-tra")?.getBoundingClientRect();
+      return r ? { top: Math.round(r.top), ih: innerHeight } : null;
+    });
+    rec("Link Đổi trả cuộn tới mục, không bị header che", !!anchor && anchor.top >= 64 && anchor.top < anchor.ih, anchor);
+
     rec("Không lỗi console hay request >= 400", errs.length === 0, errs.slice(0, 5));
 
     // Nav đáy điện thoại giữ 5 ô, không có /gioi-thieu.

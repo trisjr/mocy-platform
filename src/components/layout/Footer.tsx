@@ -10,7 +10,14 @@ const LINKS = [
   { href: "/luong-y", label: "Đội ngũ lương y" },
   { href: "/kien-thuc", label: "Kiến thức Đông y" },
   { href: "/gio-hang", label: "Giỏ hàng" },
+  { href: "/tra-cuu", label: "Tra cứu đơn hàng & lịch hẹn" },
   { href: "/admin", label: "Trang quản trị (demo)" },
+];
+
+const POLICY_LINKS = [
+  { href: "/chinh-sach#giao-hang", label: "Chính sách giao hàng" },
+  { href: "/chinh-sach#doi-tra", label: "Đổi trả" },
+  { href: "/chinh-sach#bao-mat", label: "Bảo mật thông tin" },
 ];
 
 /**
@@ -64,6 +71,17 @@ export function Footer() {
             <li>{LEGAL_INFO.businessLicense}</li>
             <li>{LEGAL_INFO.productNotice}</li>
           </ul>
+          <nav aria-label="Chính sách">
+            <ul className="flex flex-wrap gap-x-6">
+              {POLICY_LINKS.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="inline-flex min-h-12 items-center text-paper-50 underline underline-offset-4 hover:text-bronze-200">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
           <p className="italic">{GENERAL_DISCLAIMER}</p>
           <p className="pt-2 text-wood-200">© 2026 {SITE.name}. Bản demo giới thiệu giải pháp.</p>
         </Container>
