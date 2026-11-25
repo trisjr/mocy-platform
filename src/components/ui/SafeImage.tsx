@@ -33,7 +33,7 @@ export function SafeImage({ src, alt, className, fallback, loading = "lazy" }: S
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={src}
+      src={src.startsWith("/") && !src.startsWith("//") ? process.env.NEXT_PUBLIC_BASE_PATH + src : src}
       alt={alt}
       loading={loading}
       className={cn("object-cover", className)}
