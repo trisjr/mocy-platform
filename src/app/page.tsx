@@ -203,7 +203,7 @@ export default function HomePage() {
               id="luong-y"
               title="Đội ngũ lương y"
               intro="Lương y, bác sĩ Y học cổ truyền có chứng chỉ hành nghề, khám trực tuyến hoặc tại phòng khám."
-              more={{ href: "/dat-lich", label: "Đặt lịch tư vấn" }}
+              more={{ href: "/luong-y", label: "Xem hồ sơ lương y" }}
             />
             <div className="mt-7 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-12">
               <article className="grid gap-5 sm:grid-cols-[11rem_minmax(0,1fr)] md:grid-cols-[13rem_minmax(0,1fr)]">

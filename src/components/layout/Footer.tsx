@@ -6,6 +6,7 @@ import { Logo } from "./Logo";
 const LINKS = [
   { href: "/san-pham", label: "Sản phẩm & Dược liệu" },
   { href: "/dat-lich", label: "Đặt lịch tư vấn" },
+  { href: "/luong-y", label: "Đội ngũ lương y" },
   { href: "/kien-thuc", label: "Kiến thức Đông y" },
   { href: "/gio-hang", label: "Giỏ hàng" },
   { href: "/admin", label: "Trang quản trị (demo)" },

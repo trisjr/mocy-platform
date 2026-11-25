@@ -20,6 +20,7 @@ npm run build && npm start     # dùng cho buổi demo
 | `/san-pham`, `/san-pham/[slug]` | Danh sách, bộ lọc và chi tiết sản phẩm |
 | `/gio-hang`, `/thanh-toan` | Giỏ hàng, checkout COD hoặc VietQR giả lập |
 | `/dat-lich` | Đặt lịch lương y (5 bước) |
+| `/luong-y` | Giới thiệu đội ngũ lương y |
 | `/tu-van?san-pham=<slug>` | Đăng ký tư vấn cắt thang |
 | `/kien-thuc` | Blog kiến thức Đông y |
 | `/admin`, `/admin/don-hang`, `/admin/lich-hen` | Mini Admin |
