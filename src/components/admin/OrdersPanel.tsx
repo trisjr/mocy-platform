@@ -112,6 +112,7 @@ export function OrdersPanel() {
             {label && next ? (
               <Button
                 variant="primary"
+                className="whitespace-nowrap"
                 onClick={() => advanceOrderStatus(o.id)}
                 aria-label={`Đơn ${o.code}: chuyển sang ${ORDER_STATUS_META[next].label}`}
               >
@@ -125,6 +126,7 @@ export function OrdersPanel() {
             )}
             <Button
               variant="ghost"
+              className="whitespace-nowrap"
               aria-expanded={open}
               onClick={() => setExpanded(open ? null : o.id)}
               icon={open ? <ChevronUp aria-hidden="true" className="size-5" /> : <ChevronDown aria-hidden="true" className="size-5" />}

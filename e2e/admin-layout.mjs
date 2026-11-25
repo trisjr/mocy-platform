@@ -20,13 +20,10 @@ function inspect() {
   const txt = document.body.innerText;
   const phones = [...document.querySelectorAll('a[href^="tel:"]')].filter(vis);
   const tabs = [...document.querySelectorAll("[role=tab]")].filter(vis);
-  // Nút kiểm ở trang lịch hẹn. Nút "Xác nhận, bốc thuốc" ở trang đơn hàng cố ý cho xuống 2 dòng nên không kiểm.
-  const onAppt = location.pathname === "/admin/lich-hen";
-  const btns = onAppt
-    ? [...document.querySelectorAll("main button, [role=tabpanel] button, main a")]
-        .filter(vis)
-        .filter((b) => /Xem triệu chứng|Thu gọn|Chi tiết|Xem chi tiết|Hủy lịch|Đã khám|Xác nhận|Đã liên hệ/.test(b.innerText))
-    : [];
+  // Nút thao tác ở trang lịch hẹn và trang đơn hàng.
+  const btns = [...document.querySelectorAll("main button, [role=tabpanel] button, main a")]
+    .filter(vis)
+    .filter((b) => /Xem triệu chứng|Triệu chứng|Thu gọn|Chi tiết|Hủy lịch|Đã khám|Xác nhận|Đã liên hệ|Giao hàng|Hoàn thành|bốc thuốc/.test(b.innerText));
   // Cột 2 của bảng đơn hàng là tên khách.
   const names = location.pathname === "/admin/don-hang"
     ? [...document.querySelectorAll("tbody tr td:nth-child(2)")].filter(vis).map((td) => td.querySelector("p")).filter(Boolean)
