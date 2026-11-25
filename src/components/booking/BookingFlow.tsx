@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { SafeImage } from "@/components/ui";
 import { Container } from "@/components/layout";
-import { Button, ChoiceCard, Input, Stepper, Textarea } from "@/components/ui";
+import { Button, ChoiceCard, Input, RadioGroup, Stepper, Textarea } from "@/components/ui";
 import { doctors, symptomGroups } from "@/data";
 import { getDoctorById, getDoctorBySlug, getSymptomGroupById } from "@/lib/catalog";
 import { CONSULT_MODE_LABELS, ONLINE_CHANNEL_LABELS, SITE, WEEKDAY_LABELS } from "@/lib/constants";
@@ -29,6 +29,11 @@ const NEXT_HINTS = [
   "Chọn ngày và giờ khám để tiếp tục.",
 ];
 
+/** Có lương y nhận khám nhóm triệu chứng này theo hình thức này không. */
+function hasDoctor(groupId: string, mode: ConsultMode) {
+  return doctors.some((d) => d.symptomGroupIds.includes(groupId) && d.consultModes.includes(mode));
+}
+
 export function BookingFlow() {
   const router = useRouter();
   const params = useSearchParams();
@@ -41,7 +46,8 @@ export function BookingFlow() {
     [requestedDoctorParam],
   );
 
-  const topRef = useRef<HTMLDivElement>(null);
+  const stepsRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [rawStep, setStep] = useState(0);
   const [groupId, setGroupId] = useState("");
   const [mode, setMode] = useState<ConsultMode | "">("");
@@ -61,8 +67,14 @@ export function BookingFlow() {
     () => (groupId && mode ? doctors.filter((d) => d.symptomGroupIds.includes(groupId) && d.consultModes.includes(mode)) : []),
     [groupId, mode],
   );
-  const doctor = eligibleDoctors.find((d) => d.id === doctorId);
-  const requestedIneligible = requestedDoctor && !doctor && doctorId === requestedDoctor.id;
+  const requestedIneligible =
+    requestedDoctor && doctorId === requestedDoctor.id && !eligibleDoctors.some((d) => d.id === requestedDoctor.id);
+  // Chỉ có một lương y phù hợp thì chọn sẵn, khách không phải bấm thêm. Không chọn sẵn khi khách đến để đặt
+  // một lương y khác mà lương y đó không phù hợp: để khách tự quyết.
+  const doctor =
+    eligibleDoctors.length === 1 && !requestedIneligible ? eligibleDoctors[0] : eligibleDoctors.find((d) => d.id === doctorId);
+  const requestedGroups = requestedDoctor ? symptomGroups.filter((g) => requestedDoctor.symptomGroupIds.includes(g.id)) : [];
+  const unavailableModes = groupId ? (["online", "clinic"] as const).filter((m) => !hasDoctor(groupId, m)) : [];
 
   const dates = useMemo(() => (hydrated && doctor ? getUpcomingWorkingDates(doctor, BOOKING_DAYS) : []), [hydrated, doctor]);
   const slotsByDate = useMemo(() => {
@@ -78,11 +90,21 @@ export function BookingFlow() {
   const slotNotice = submitError || (slotLost ? SLOT_TAKEN_MESSAGE : "");
 
   const canNext = [Boolean(group), Boolean(mode), Boolean(doctor), Boolean(date && validTime)][step] ?? false;
+  const noDoctor = step === 2 && eligibleDoctors.length === 0;
+
+  // Sang bước mới: đưa thanh bước lên đầu màn hình và focus vào tiêu đề bước. Nút "Tiếp tục" bị khóa ở bước mới
+  // nên sẽ mất focus; không chuyển focus thì người dùng bàn phím, trình đọc màn hình bị đưa về đầu trang.
+  const shownStep = useRef(step);
+  useEffect(() => {
+    if (shownStep.current === step) return;
+    shownStep.current = step;
+    stepsRef.current?.scrollIntoView({ block: "start" });
+    document.getElementById("step-title")?.focus({ preventScroll: true });
+  }, [step]);
 
   function goTo(next: number) {
     setStep(next);
     setSubmitError("");
-    topRef.current?.scrollIntoView({ block: "start" });
   }
 
   function resetSchedule() {
@@ -98,7 +120,15 @@ export function BookingFlow() {
     if (!phone.trim()) next.phone = "Vui lòng nhập số điện thoại.";
     else if (!isValidPhone(phone)) next.phone = "Số điện thoại gồm 10 chữ số, bắt đầu bằng số 0. Ví dụ: 0901 234 567.";
     setErrors(next);
-    if (next.name || next.phone) return;
+    if (next.name || next.phone) {
+      // Trên điện thoại ô lỗi thường đã cuộn khỏi màn hình: đưa ô lỗi đầu tiên ra giữa màn hình và focus vào đó.
+      const field = formRef.current?.elements.namedItem(next.name ? "name" : "phone");
+      if (field instanceof HTMLElement) {
+        field.focus({ preventScroll: true });
+        field.scrollIntoView({ block: "center" });
+      }
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -120,59 +150,65 @@ export function BookingFlow() {
       if (err instanceof StoreError && err.code === "SLOT_TAKEN") {
         setTime("");
         setStep(3);
-        topRef.current?.scrollIntoView({ block: "start" });
       }
     }
   }
 
   return (
     <Container className="py-6 sm:py-10">
-      <div ref={topRef} className="mx-auto max-w-3xl scroll-mt-24">
+      <div className="mx-auto max-w-3xl">
         <h1 className="text-4xl sm:text-5xl">Đặt lịch cùng lương y</h1>
         <p className="mt-2 text-lg text-ink-muted">Chỉ mất khoảng 2 phút. Bạn chỉ cần để lại họ tên và số điện thoại.</p>
 
         {requestedDoctor && (
           <p className="mt-4 border-l-4 border-herb-700 bg-herb-50 px-4 py-3 text-herb-900">
-            Bạn đang đặt lịch với <strong>{requestedDoctor.name}</strong>. Chọn nhóm triệu chứng và
-            hình thức, hệ thống sẽ chọn sẵn lương y này nếu phù hợp.
+            Bạn đang đặt lịch với <strong>{requestedDoctor.name}</strong>. Lương y nhận khám nhóm{" "}
+            <strong>{requestedGroups.map((g) => g.name).join(", ")}</strong>
+            {requestedDoctor.consultModes.length === 1 && `, chỉ ${CONSULT_MODE_LABELS[requestedDoctor.consultModes[0]].toLowerCase()}`}.
+            Chọn đúng {requestedDoctor.consultModes.length === 1 ? "nhóm và hình thức" : "một trong các nhóm"} này, hệ thống sẽ
+            chọn sẵn lương y.
           </p>
         )}
 
-        <Stepper steps={STEPS} current={step} onStepClick={goTo} className="mt-6" />
+        <div ref={stepsRef} className="mt-6 scroll-mt-24">
+          <Stepper steps={STEPS} current={step} onStepClick={goTo} />
+        </div>
 
         {/* Phiếu đặt lịch: mỗi bước là một mặt phiếu */}
         <div className="paper-fiber mt-6 border border-line bg-surface px-5 py-6 shadow-card sm:px-8 sm:py-8">
           {step === 0 && (
             <section aria-labelledby="step-title">
-              <h2 id="step-title" className="text-2xl md:text-3xl">Bạn đang gặp vấn đề gì?</h2>
+              <h2 id="step-title" tabIndex={-1} className="text-2xl md:text-3xl">Bạn đang gặp vấn đề gì?</h2>
               <p className="mt-1 text-ink-muted">Chọn nhóm triệu chứng gần nhất để chúng tôi gợi ý đúng lương y.</p>
               {symptomGroups.length === 0 ? (
                 <p className="mt-4 border-l-4 border-line-strong bg-paper-100 px-4 py-3">Danh sách nhóm triệu chứng đang được cập nhật. Vui lòng quay lại sau.</p>
               ) : (
-                <div role="radiogroup" aria-label="Nhóm triệu chứng" className="mt-4 grid gap-3 sm:grid-cols-2">
+                <RadioGroup label="Nhóm triệu chứng" className="mt-4 grid gap-3 sm:grid-cols-2">
                   {symptomGroups.map((g) => (
                     <ChoiceCard
                       key={g.id}
                       selected={g.id === groupId}
                       onSelect={() => {
                         setGroupId(g.id);
+                        if (mode && !hasDoctor(g.id, mode)) setMode("");
                         resetSchedule();
                       }}
                       title={g.name}
                       description={g.description}
                     />
                   ))}
-                </div>
+                </RadioGroup>
               )}
             </section>
           )}
 
           {step === 1 && (
             <section aria-labelledby="step-title">
-              <h2 id="step-title" className="text-2xl md:text-3xl">Bạn muốn tư vấn bằng cách nào?</h2>
-              <div role="radiogroup" aria-label="Hình thức tư vấn" className="mt-4 grid gap-3">
+              <h2 id="step-title" tabIndex={-1} className="text-2xl md:text-3xl">Bạn muốn tư vấn bằng cách nào?</h2>
+              <RadioGroup label="Hình thức tư vấn" className="mt-4 grid gap-3">
                 <ChoiceCard
                   selected={mode === "online"}
+                  disabled={unavailableModes.includes("online")}
                   onSelect={() => {
                     setMode("online");
                     resetSchedule();
@@ -182,6 +218,7 @@ export function BookingFlow() {
                 />
                 <ChoiceCard
                   selected={mode === "clinic"}
+                  disabled={unavailableModes.includes("clinic")}
                   onSelect={() => {
                     setMode("clinic");
                     resetSchedule();
@@ -189,17 +226,29 @@ export function BookingFlow() {
                   title={CONSULT_MODE_LABELS.clinic}
                   description={`Thăm khám trực tiếp, bắt mạch, xem lưỡi. Địa chỉ: ${SITE.address}`}
                 />
-              </div>
+              </RadioGroup>
+              {unavailableModes.length > 0 && (
+                <p className="mt-3 border-l-4 border-line-strong bg-paper-100 px-4 py-3">
+                  {unavailableModes
+                    .map((m) => `Chưa có lương y nhận ${CONSULT_MODE_LABELS[m].toLowerCase()} cho nhóm "${group?.name}".`)
+                    .join(" ")}
+                </p>
+              )}
+              {requestedDoctor?.symptomGroupIds.includes(groupId) && requestedDoctor.consultModes.length === 1 && (
+                <p className="mt-3 text-ink-muted">
+                  {requestedDoctor.name} chỉ nhận {CONSULT_MODE_LABELS[requestedDoctor.consultModes[0]].toLowerCase()}.
+                </p>
+              )}
               {mode === "online" && (
                 <div className="mt-5">
                   <p className="font-semibold">Bạn muốn gọi bằng kênh nào?</p>
-                  <div role="radiogroup" aria-label="Kênh tư vấn trực tuyến" className="mt-2 flex flex-wrap gap-3">
+                  <RadioGroup label="Kênh tư vấn trực tuyến" className="mt-2 flex flex-wrap gap-3">
                     {(Object.keys(ONLINE_CHANNEL_LABELS) as OnlineChannel[]).map((c) => (
                       <PillOption key={c} selected={channel === c} onSelect={() => setChannel(c)} className="px-5">
                         {ONLINE_CHANNEL_LABELS[c]}
                       </PillOption>
                     ))}
-                  </div>
+                  </RadioGroup>
                 </div>
               )}
             </section>
@@ -207,7 +256,7 @@ export function BookingFlow() {
 
           {step === 2 && (
             <section aria-labelledby="step-title">
-              <h2 id="step-title" className="text-2xl md:text-3xl">Chọn lương y</h2>
+              <h2 id="step-title" tabIndex={-1} className="text-2xl md:text-3xl">Chọn lương y</h2>
               <p className="mt-1 text-ink-muted">
                 Các lương y nhận khám nhóm &quot;{group?.name}&quot; theo hình thức &quot;{mode ? CONSULT_MODE_LABELS[mode] : ""}&quot;.
               </p>
@@ -227,11 +276,11 @@ export function BookingFlow() {
                   </div>
                 </div>
               ) : (
-                <div role="radiogroup" aria-label="Lương y" className="mt-4 grid gap-3">
+                <RadioGroup label="Lương y" className="mt-4 grid gap-3">
                   {eligibleDoctors.map((d) => (
                     <ChoiceCard
                       key={d.id}
-                      selected={d.id === doctorId}
+                      selected={d.id === doctor?.id}
                       onSelect={() => {
                         setDoctorId(d.id);
                         resetSchedule();
@@ -250,14 +299,14 @@ export function BookingFlow() {
                       }
                     />
                   ))}
-                </div>
+                </RadioGroup>
               )}
             </section>
           )}
 
           {step === 3 && (
             <section aria-labelledby="step-title">
-              <h2 id="step-title" className="text-2xl md:text-3xl">Chọn ngày và giờ khám</h2>
+              <h2 id="step-title" tabIndex={-1} className="text-2xl md:text-3xl">Chọn ngày và giờ khám</h2>
               {doctor && (
                 <p className="mt-1 text-ink-muted">
                   Lịch của {doctor.name} trong {BOOKING_DAYS} ngày tới.
@@ -273,7 +322,8 @@ export function BookingFlow() {
               ) : (
                 <>
                   <p className="mt-4 font-semibold">Ngày khám</p>
-                  <div role="radiogroup" aria-label="Ngày khám" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  {/* Điện thoại: số cột tự giảm khi tăng cỡ chữ, để ô ngày, giờ không đè lên nhau. */}
+                  <RadioGroup label="Ngày khám" className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(5rem,1fr))] gap-2 sm:grid-cols-4">
                     {dates.map((d) => {
                       const full = (slotsByDate[d] ?? []).length === 0;
                       const parsed = parseDateKey(d);
@@ -282,6 +332,7 @@ export function BookingFlow() {
                           key={d}
                           selected={d === date}
                           disabled={full}
+                          className="min-w-0"
                           onSelect={() => {
                             setDate(d);
                             setTime("");
@@ -295,13 +346,13 @@ export function BookingFlow() {
                         </PillOption>
                       );
                     })}
-                  </div>
+                  </RadioGroup>
                   {date && (
                     <>
                       <p className="mt-5 font-semibold">Giờ khám, {formatDateKey(date)}</p>
-                      <div role="radiogroup" aria-label="Giờ khám" className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+                      <RadioGroup label="Giờ khám" className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(5rem,1fr))] gap-2 sm:grid-cols-5">
                         {slots.map((s) => (
-                          <PillOption key={s} selected={s === validTime} onSelect={() => {
+                          <PillOption key={s} selected={s === validTime} className="min-w-0" onSelect={() => {
                               setTime(s);
                               setStep(3);
                               setSubmitError("");
@@ -309,7 +360,7 @@ export function BookingFlow() {
                             {s}
                           </PillOption>
                         ))}
-                      </div>
+                      </RadioGroup>
                     </>
                   )}
                 </>
@@ -318,8 +369,8 @@ export function BookingFlow() {
           )}
 
           {step === 4 && doctor && group && mode && (
-            <form noValidate onSubmit={submit} aria-labelledby="step-title">
-              <h2 id="step-title" className="text-2xl md:text-3xl">Thông tin của bạn</h2>
+            <form ref={formRef} noValidate onSubmit={submit} aria-labelledby="step-title">
+              <h2 id="step-title" tabIndex={-1} className="text-2xl md:text-3xl">Thông tin của bạn</h2>
               <div className="mt-4 border-y-2 border-double border-line-strong/70 bg-paper-50 px-4">
                 <SummaryList
                   rows={[
@@ -380,7 +431,7 @@ export function BookingFlow() {
             </form>
           )}
 
-          {step < 4 && (
+          {step < 4 && !noDoctor && (
             <div className="mt-7 flex flex-col gap-3 border-t-2 border-dashed border-line-strong/60 pt-5">
               {!canNext && (
                 <p id="goi-y-tiep-tuc" className="text-ink-muted sm:text-right">
