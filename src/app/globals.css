@@ -72,7 +72,7 @@
   --font-heading: var(--font-alegreya), ui-serif, Georgia, serif;
 
   /* Chữ nhãn nhỏ nhất (nhãn pháp lý, chú thích): 16px. */
-  --text-label: 0.94rem;
+  --text-label: 0.945rem;
   --text-label--line-height: 1.5;
 
   --radius-card: 0.25rem;

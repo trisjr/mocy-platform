@@ -79,7 +79,7 @@ export function ProductPurchase({ product }: { product: Product }) {
         </p>
       )}
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="font-semibold">Số lượng</span>
         <QuantityInput
           value={quantity}

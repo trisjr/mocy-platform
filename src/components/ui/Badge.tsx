@@ -61,7 +61,7 @@ export function LegalBadge({ label, short, className }: LegalBadgeProps) {
     <span
       title={meta.label}
       className={cn(
-        "inline-flex items-center rounded-[3px] border-[1.5px] border-current px-2 text-label font-semibold whitespace-nowrap",
+        "inline-flex max-w-full items-center rounded-[3px] border-[1.5px] border-current px-2 text-label font-semibold",
         STAMP_CLASSES[meta.tone],
         className,
       )}

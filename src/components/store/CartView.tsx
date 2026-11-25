@@ -67,7 +67,10 @@ export function CartView() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         {slug ? (
-                          <Link href={`/san-pham/${slug}`} className="font-heading text-xl font-bold hover:underline">
+                          <Link
+                            href={`/san-pham/${slug}`}
+                            className="inline-flex min-h-12 items-center font-heading text-xl leading-tight font-bold hover:underline"
+                          >
                             {item.productName}
                           </Link>
                         ) : (

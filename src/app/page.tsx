@@ -268,7 +268,7 @@ export default function HomePage() {
             <div className="mt-7 grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-12">
               <figure>
                 <blockquote className="font-heading text-2xl leading-snug font-medium italic md:text-3xl">
-                  <span aria-hidden="true" className="block font-heading text-6xl leading-[0.6] text-bronze-500 not-italic">
+                  <span aria-hidden="true" className="block font-heading text-6xl leading-[0.6] text-bronze-600 not-italic">
                     “
                   </span>
                   {leadQuote.content}

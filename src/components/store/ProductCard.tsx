@@ -59,11 +59,12 @@ export function ProductSheet({
   children: ReactNode;
 }) {
   return (
-    <div className={cn("crop-marks paper-fiber bg-surface shadow-card", className)}>
+    <div className={cn("@container crop-marks paper-fiber bg-surface shadow-card", className)}>
       <div className="overflow-hidden">
+        {/* Hai cột trên điện thoại; khi người dùng đặt chữ rất to (tờ nhãn hẹp hơn 19rem) thì về một cột. */}
         <ul
           className={cn(
-            "-mr-px -mb-px grid grid-cols-2 [&>li]:border-r [&>li]:border-b [&>li]:border-dashed [&>li]:border-line-strong/60",
+            "-mr-px -mb-px grid grid-cols-1 @min-[19rem]:grid-cols-2 [&>li]:border-r [&>li]:border-b [&>li]:border-dashed [&>li]:border-line-strong/60",
             columns === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3",
           )}
         >

@@ -16,7 +16,7 @@ export function SiteShell({ children, footer }: { children: ReactNode; footer: R
     <>
       <a
         href="#noi-dung"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-paper-50 focus:px-4 focus:py-3 focus:font-semibold focus:text-ink"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-paper-50 focus:px-4 focus:py-3 focus:font-semibold focus:text-ink focus:outline-bronze-300"
       >
         Bỏ qua, đến nội dung chính
       </a>

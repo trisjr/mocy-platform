@@ -37,8 +37,8 @@ export function Header() {
   const pathname = usePathname();
   return (
     <header className="on-dark sticky top-0 z-40 bg-wood-800 text-paper-50">
-      <Container className="flex h-16 items-center justify-between gap-3 md:h-20">
-        <Logo className="shrink-0" inverted />
+      <Container className="@container flex h-16 items-center justify-between gap-3 md:h-20">
+        <Logo className="min-w-0 shrink" inverted compact />
         <nav aria-label="Điều hướng chính" className="hidden md:block">
           <ul className="flex items-center gap-1">
             {NAV_ITEMS.map((item) => {
