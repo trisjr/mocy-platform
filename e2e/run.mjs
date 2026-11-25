@@ -2,7 +2,7 @@
 // Chạy một script riêng: node e2e/shots.mjs
 import { BASE_URL, CHROME_PATH, OUT_DIR, launchBrowser, formatTable } from "./lib.mjs";
 
-const SUITES = ["shots", "scenario", "collide", "stale", "admin-layout", "reset"];
+const SUITES = ["shots", "content", "scenario", "collide", "stale", "admin-layout", "reset"];
 
 console.log("BASE_URL=" + BASE_URL + "\nCHROME_PATH=" + CHROME_PATH + "\nOUT_DIR=" + OUT_DIR + "\n");
 

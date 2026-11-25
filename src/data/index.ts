@@ -11,3 +11,5 @@ export { articles } from "./articles";
 export { testimonials } from "./testimonials";
 export { coupons } from "./coupons";
 export { seedOrders, seedAppointments } from "./seed";
+export { careSteps } from "./care-steps";
+export { faqs } from "./faqs";

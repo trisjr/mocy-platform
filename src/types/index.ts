@@ -256,3 +256,16 @@ export interface ConsultRequest {
   prescriptionImage?: string;
   customer: CustomerInfo;
 }
+
+/** Một bước trong quy trình khám – bốc thuốc – giao thuốc. */
+export interface CareStep {
+  title: string;
+  text: string;
+}
+
+/** Câu hỏi thường gặp. */
+export interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+}

@@ -4,7 +4,7 @@ import { Container } from "@/components/layout";
 import { ProductCard, ProductSheet } from "@/components/store/ProductCard";
 import { SupplementNotice } from "@/components/store/SupplementNotice";
 import { ButtonLink, DisclaimerBox, LegalBadge, SafeImage, Seal } from "@/components/ui";
-import { articles, doctors, products, symptomGroups, testimonials } from "@/data";
+import { articles, careSteps, doctors, faqs, products, symptomGroups, testimonials } from "@/data";
 import { FREE_SHIPPING_THRESHOLD, SITE } from "@/lib/constants";
 import { formatDate, formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -106,6 +106,38 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+        </Container>
+      </section>
+
+      {/* Quy trình khám – bốc thuốc – giao thuốc: 4 bước đánh số, không icon */}
+      <section id="quy-trinh" aria-labelledby="quy-trinh-title" className="scroll-mt-28 py-10 md:py-16">
+        <Container>
+          <SectionHead
+            id="quy-trinh"
+            title="Quy trình khám & bốc thuốc"
+            intro="Từ lúc đặt lịch đến khi thuốc về tận nhà, lương y theo sát từng bước."
+          />
+          <ol className="mt-7 grid border-t-2 border-double border-line-strong/70 sm:grid-cols-2 lg:grid-cols-4">
+            {careSteps.map((s, i) => (
+              <li
+                key={s.title}
+                className={cn(
+                  "flex gap-4 border-b border-dashed border-line-strong/50 py-5 sm:flex-col sm:gap-2 sm:pr-5",
+                  i % 2 === 1 && "sm:border-l sm:pl-5",
+                  "lg:border-b-0 lg:pl-5 lg:first:pl-0",
+                  i > 0 && "lg:border-l",
+                )}
+              >
+                <span aria-hidden="true" className="font-heading text-5xl leading-none font-bold text-bronze-600">
+                  {i + 1}
+                </span>
+                <div>
+                  <h3 className="text-xl leading-snug">{s.title}</h3>
+                  <p className="mt-1 text-ink-muted">{s.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </Container>
       </section>
 
@@ -354,6 +386,31 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
+          </Container>
+        </section>
+      )}
+
+      {/* Câu hỏi thường gặp: details/summary gốc, không cần JS */}
+      {faqs.length > 0 && (
+        <section id="cau-hoi" aria-labelledby="cau-hoi-title" className="scroll-mt-28 border-t border-line-strong/50 py-10 md:py-16">
+          <Container>
+            <h2 id="cau-hoi-title" className="text-3xl md:text-4xl">
+              Câu hỏi thường gặp
+            </h2>
+            <div className="mt-6 max-w-3xl border-t-2 border-double border-line-strong/70">
+              {faqs.map((f) => (
+                <details key={f.id} className="group border-b border-dashed border-line-strong/60">
+                  <summary className="flex min-h-12 cursor-pointer list-none items-start justify-between gap-4 py-4 text-lg font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-herb-700 [&::-webkit-details-marker]:hidden">
+                    <span>{f.question}</span>
+                    <span aria-hidden="true" className="shrink-0 font-heading text-2xl leading-none text-bronze-600">
+                      <span className="group-open:hidden">+</span>
+                      <span className="hidden group-open:inline">−</span>
+                    </span>
+                  </summary>
+                  <p className="pb-5 text-ink-muted">{f.answer}</p>
+                </details>
+              ))}
+            </div>
           </Container>
         </section>
       )}
