@@ -1,5 +1,5 @@
 // Nội dung P1 của bản demo: quy trình 4 bước, câu hỏi thường gặp, khối chi phí, trang /gioi-thieu, điều hướng.
-import { B, makeRecorder, newContext, newPage, nextStep, radio, runStandalone, sleep } from "./lib.mjs";
+import { B, clickText, makeRecorder, newContext, newPage, nextStep, radio, runStandalone, sleep } from "./lib.mjs";
 
 // Kiểm khối chi phí trên trang đang mở.
 function feeInfo(p) {
@@ -94,6 +94,145 @@ export async function run(browser) {
     }));
     rec("Có link /gioi-thieu ở footer và khối quy trình", navD.footer && navD.home, navD);
 
+    // ---- Trang /chinh-sach
+    await p.goto(B + "/chinh-sach", { waitUntil: "networkidle0" });
+    const pol = await p.evaluate(() => {
+      const t = (id) => document.getElementById(id)?.innerText || "";
+      return {
+        h1: document.querySelector("h1")?.innerText,
+        ship: t("giao-hang"),
+        ret: t("doi-tra"),
+        priv: t("bao-mat"),
+        all: document.body.innerText,
+        footer: document.querySelectorAll('footer a[href^="/chinh-sach#"]').length,
+      };
+    });
+    rec(
+      "/chinh-sach có h1, 3 mục và số liệu đúng",
+      pol.h1 === "Chính sách" && pol.ship.includes("500.000đ") && pol.ship.includes("30.000đ") && pol.ret.includes("48 giờ") && pol.priv.includes("không bán") && !/vô trùng/i.test(pol.all),
+      { h1: pol.h1 },
+    );
+    rec("Footer có 3 link chính sách", pol.footer === 3, pol.footer);
+    await p.goto(B + "/", { waitUntil: "networkidle0" });
+    await Promise.all([
+      p.waitForFunction(() => location.pathname.startsWith("/chinh-sach"), { timeout: 6000 }).catch(() => {}),
+      p.$eval('footer a[href="/chinh-sach#doi-tra"]', (a) => a.click()),
+    ]);
+    await sleep(800);
+    const anchor = await p.evaluate(() => {
+      const r = document.getElementById("doi-tra")?.getBoundingClientRect();
+      const hb = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+      return r ? { top: Math.round(r.top), headerBottom: Math.round(hb), scrollY: Math.round(scrollY) } : null;
+    });
+    rec(
+      "Link Đổi trả cuộn tới mục, không bị header che",
+      !!anchor && anchor.scrollY > 0 && anchor.top >= anchor.headerBottom && anchor.top < anchor.headerBottom + 120,
+      anchor,
+    );
+
+    // ---- Nút liên hệ nổi
+    await p.goto(B + "/", { waitUntil: "networkidle0" });
+    const fab = await p.evaluate(() => {
+      const z = document.querySelector('a[href^="https://zalo.me/"][target="_blank"]');
+      const t = document.querySelector('a[href^="tel:"][aria-label^="Gọi hotline"]:not(header a)');
+      const box = z?.parentElement;
+      return {
+        fixed: !!box && getComputedStyle(box).position === "fixed" && box.contains(t),
+        visible: !!z && !!t && z.getClientRects().length > 0 && t.getClientRects().length > 0,
+      };
+    });
+    rec("1280px: có nút nổi Zalo + Gọi", fab.fixed && fab.visible, fab);
+    for (const w of [1024, 1152, 1280]) {
+      await p.setViewport({ width: w, height: 800 });
+      await sleep(200);
+      const clash = await p.evaluate(async () => {
+        window.scrollTo(0, document.body.scrollHeight);
+        await new Promise((r) => setTimeout(r, 150));
+        const f = document.querySelector('a[href^="https://zalo.me/"]').parentElement.getBoundingClientRect();
+        const hits = [...document.querySelectorAll("footer p, footer li, footer h2")].filter((e) => {
+          for (const r of e.getClientRects()) {
+            if (r.right > f.left && r.left < f.right && r.bottom > f.top && r.top < f.bottom) return true;
+          }
+          return false;
+        });
+        return hits.map((e) => e.innerText.slice(0, 40));
+      });
+      rec(w + "px: cuộn hết trang, nút nổi không đè chữ ở Footer", clash.length === 0, clash);
+    }
+    await p.setViewport({ width: 1280, height: 800 });
+
+    // Nút nổi không che nút chính khi nút nằm sát đáy màn hình hoặc cuộn hết trang.
+    const notCovered = (sel, re) =>
+      p.evaluate(
+        async (sel, src) => {
+          const re = new RegExp(src);
+          const b = [...document.querySelectorAll(sel)].find((x) => re.test(x.innerText) && x.getClientRects().length);
+          if (!b) return { found: false };
+          const hit = () => {
+            const r = b.getBoundingClientRect();
+            const xs = [r.left + 4, r.left + r.width / 2, r.right - 4];
+            const y = r.top + r.height / 2;
+            return xs.every((x) => {
+              const e = document.elementFromPoint(x, y);
+              return !!e && (e === b || b.contains(e));
+            });
+          };
+          b.scrollIntoView({ block: "end" });
+          await new Promise((r) => setTimeout(r, 150));
+          const atEnd = hit();
+          window.scrollTo(0, document.body.scrollHeight);
+          await new Promise((r) => setTimeout(r, 150));
+          const r = b.getBoundingClientRect();
+          // null: ở cuối trang nút đã cuộn khỏi màn hình, không có gì để che.
+          const atBottom = r.bottom < 0 || r.top > innerHeight ? null : hit();
+          return { found: true, atEnd, atBottom };
+        },
+        sel,
+        re.source,
+      );
+    await p.goto(B + "/san-pham/tao-nhan-sao", { waitUntil: "networkidle0" });
+    await clickText(p, "button", /Thêm vào giỏ/);
+    await sleep(300);
+    for (const w of [1024, 1280]) {
+      await p.setViewport({ width: w, height: 800 });
+      await p.goto(B + "/dat-lich", { waitUntil: "networkidle0" });
+      await radio(p, "Nhóm triệu chứng", 1);
+      const a = await notCovered("button", /^\s*Tiếp tục/);
+      await p.goto(B + "/thanh-toan", { waitUntil: "networkidle0" });
+      await sleep(300);
+      const c = await notCovered("button[type=submit]", /Đặt hàng/);
+      rec(w + "px: nút nổi không che Tiếp tục / Đặt hàng", a.found && a.atEnd && a.atBottom !== false && c.found && c.atEnd && c.atBottom !== false, { datLich: a, thanhToan: c });
+    }
+    await p.setViewport({ width: 1280, height: 800 });
+
+    // ---- Chỉ đường
+    const MAPS = 'a[href^="https://www.google.com/maps/"][target="_blank"]';
+    await p.goto(B + "/gioi-thieu", { waitUntil: "networkidle0" });
+    const maps1 = await p.evaluate((M) => ({
+      footer: !!document.querySelector("footer " + M),
+      about: !!document.querySelector("#khong-gian " + M),
+    }), MAPS);
+    rec("Có link Chỉ đường ở Footer và /gioi-thieu", maps1.footer && maps1.about, maps1);
+    const modes = await p.evaluate(() => {
+      const s = JSON.parse(localStorage.getItem("mocy-demo"));
+      return {
+        clinic: s.appointments.find((a) => a.mode === "clinic")?.code,
+        online: s.appointments.find((a) => a.mode === "online")?.code,
+      };
+    });
+    const mapsOn = async (code) => {
+      await p.goto(B + "/dat-lich/xac-nhan?ma=" + code, { waitUntil: "networkidle0" });
+      await sleep(400);
+      return p.evaluate((M, code) => ({ map: !!document.querySelector("main " + M), rendered: document.body.innerText.includes(code) }), MAPS, code);
+    };
+    const clinicMap = await mapsOn(modes.clinic);
+    const onlineMap = await mapsOn(modes.online);
+    rec(
+      "Phiếu lịch hẹn tại phòng khám có Chỉ đường, trực tuyến thì không",
+      clinicMap.rendered && clinicMap.map && onlineMap.rendered && !onlineMap.map,
+      { ...modes, clinicMap, onlineMap },
+    );
+
     rec("Không lỗi console hay request >= 400", errs.length === 0, errs.slice(0, 5));
 
     // Nav đáy điện thoại giữ 5 ô, không có /gioi-thieu.
@@ -101,6 +240,14 @@ export async function run(browser) {
     await m.goto(B + "/", { waitUntil: "networkidle0" });
     const mob = await m.evaluate(() => [...document.querySelectorAll('nav[aria-label="Điều hướng nhanh"] a')].map((a) => a.getAttribute("href")));
     rec("390px: nav đáy có 5 ô, không có /gioi-thieu", mob.length === 5 && !mob.includes("/gioi-thieu"), mob);
+    for (const w of [390, 768]) {
+      await m.setViewport({ width: w, height: 844 });
+      await sleep(200);
+      const shown = await m.evaluate(() => document.querySelector('a[href^="https://zalo.me/"]')?.getClientRects().length ?? 0);
+      rec(w + "px: nút nổi ẩn", shown === 0, shown);
+    }
+    await m.goto(B + "/admin", { waitUntil: "networkidle0" });
+    rec("/admin không có nút nổi", !(await m.$('a[href^="https://zalo.me/"]')));
 
     // Header ở các mốc chật (giữ nguyên số mục nav): không tràn, logo không bị cắt, link nav không xuống dòng.
     for (const w of [768, 1024, 1280]) {

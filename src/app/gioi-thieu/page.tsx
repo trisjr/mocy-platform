@@ -103,6 +103,11 @@ export default function AboutPage() {
           </ul>
           <ul className="mt-5 flex flex-col gap-1">
             <li>{SITE.address}</li>
+            <li>
+              <a href={SITE.mapsHref} target="_blank" rel="noopener noreferrer" className={LINK}>
+                Chỉ đường
+              </a>
+            </li>
             <li>{SITE.openingHours}</li>
             <li>
               <a href={SITE.hotlineHref} className={LINK}>

@@ -10,6 +10,8 @@ const PAGES = [
   ["dat-lich", "/dat-lich"],
   ["luong-y", "/luong-y"],
   ["gioi-thieu", "/gioi-thieu"],
+  ["tra-cuu", "/tra-cuu"],
+  ["chinh-sach", "/chinh-sach"],
   ["kien-thuc", "/kien-thuc"],
   ["kt-detail", "/kien-thuc/giu-ty-vi-khoe-moi-ngay"],
   ["tu-van", "/tu-van?san-pham=bai-thuoc-an-than"],

@@ -118,6 +118,16 @@ export function BookingConfirmation() {
               </li>
             ))}
           </ul>
+          {!isOnline && (
+            <a
+              href={SITE.mapsHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex min-h-12 items-center font-semibold text-herb-700 underline"
+            >
+              Chỉ đường đến phòng khám
+            </a>
+          )}
           <p className="mt-5 border-t border-dashed border-line-strong/60 pt-4 text-ink-muted">
             Cần đổi giờ hoặc hủy lịch, vui lòng gọi{" "}
             <a href={SITE.hotlineHref} className="inline-flex min-h-12 items-center font-semibold text-herb-700 underline">
@@ -130,6 +140,9 @@ export function BookingConfirmation() {
         <div className="flex flex-col gap-3 sm:flex-row">
           <ButtonLink href="/" size="lg">
             Về trang chủ
+          </ButtonLink>
+          <ButtonLink href={`/tra-cuu?ma=${appointment.code}`} variant="outline" size="lg">
+            Theo dõi lịch hẹn
           </ButtonLink>
           <ButtonLink href="/kien-thuc" variant="outline" size="lg">
             Đọc kiến thức Đông y

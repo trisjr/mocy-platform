@@ -123,6 +123,9 @@ export function ConsultForm() {
           <p className="mt-6 text-ink-muted">Cần gấp, bạn có thể gọi {SITE.hotline}.</p>
           <div className="mt-4 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href="/" size="lg">Về trang chủ</ButtonLink>
+            <ButtonLink href={`/tra-cuu?ma=${done.code}`} variant="outline" size="lg">
+              Theo dõi yêu cầu
+            </ButtonLink>
             <ButtonLink href="/dat-lich" variant="outline" size="lg">
               Đặt lịch gặp lương y
             </ButtonLink>
