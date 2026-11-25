@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mộc Y: Demo website Đông y
 
-## Getting Started
+Bản demo Giai đoạn 1 cho nền tảng bán sản phẩm Đông y và đặt lịch tư vấn lương y. Spec đầy đủ ở [requirement.md](requirement.md).
 
-First, run the development server:
+Demo chạy hoàn toàn ở frontend, không có backend. Dữ liệu lưu trong `localStorage` (key `mocy-demo`) và đồng bộ giữa các tab. Nhờ vậy đơn hàng, lịch hẹn hay yêu cầu tư vấn tạo ở trang khách sẽ hiện ngay trong Admin.
+
+## Chạy
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev                    # phát triển, http://localhost:3000
+npm run build && npm start     # dùng cho buổi demo
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Các trang
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Đường dẫn | Nội dung |
+|---|---|
+| `/` | Trang chủ |
+| `/san-pham`, `/san-pham/[slug]` | Danh sách, bộ lọc và chi tiết sản phẩm |
+| `/gio-hang`, `/thanh-toan` | Giỏ hàng, checkout COD hoặc VietQR giả lập |
+| `/dat-lich` | Đặt lịch lương y (5 bước) |
+| `/tu-van?san-pham=<slug>` | Đăng ký tư vấn cắt thang |
+| `/kien-thuc` | Blog kiến thức Đông y |
+| `/admin`, `/admin/don-hang`, `/admin/lich-hen` | Mini Admin |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Trước buổi demo
 
-## Learn More
+1. Bấm **Reset dữ liệu demo** trong Admin để ngày của đơn hàng và lịch hẹn mẫu tính lại theo hôm nay.
+2. Thay thông tin thương hiệu, hotline, tài khoản ngân hàng và giấy phép trong `src/lib/constants.ts`. Hiện đều là dữ liệu mẫu.
+3. Kịch bản trình diễn 4 bước nằm ở mục 6 của `requirement.md`. Mở trang khách và `/admin` ở hai tab riêng.
 
-To learn more about Next.js, take a look at the following resources:
+## Cấu trúc
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app`: các route
+- `src/components/{ui,layout,store,booking,blog,admin}`: component
+- `src/lib`: store, helper, hằng số. API store mô tả ở [src/lib/README.md](src/lib/README.md)
+- `src/types`: types dùng chung
+- `src/data`, `public/images`: dữ liệu và ảnh mẫu
+- `e2e/`: script kiểm thử bằng trình duyệt
