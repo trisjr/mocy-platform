@@ -2,7 +2,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 
 // Báo cho tailwind-merge biết các token tự định nghĩa trong globals.css.
 const twMerge = extendTailwindMerge({
-  extend: { theme: { radius: ["card"], shadow: ["card"], font: ["heading"] } },
+  extend: { theme: { radius: ["card"], shadow: ["card"], font: ["heading"], text: ["label"] } },
 });
 
 /**
