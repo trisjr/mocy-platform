@@ -28,12 +28,12 @@ export function Field({ id, label, required, hint, error, className, children }:
       )}
       {children}
       {hint && !error && (
-        <p id={`${id}-hint`} className="text-sm text-ink-muted">
+        <p id={`${id}-hint`} className="text-label text-ink-muted">
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} role="alert" className="text-sm font-medium text-danger">
+        <p id={`${id}-error`} role="alert" className="text-label font-medium text-danger">
           {error}
         </p>
       )}
